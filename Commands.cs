@@ -46,7 +46,7 @@ namespace ALE_GridManager {
 
             } else if(args.Count == 2) { 
 
-                TransferGridName(args[0], args[1], pcu, ownership);
+                TransferGridName(args[1], args[0], pcu, ownership);
 
             } else {
 

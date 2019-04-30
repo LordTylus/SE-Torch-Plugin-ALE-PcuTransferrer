@@ -219,16 +219,12 @@ namespace ALE_GridManager {
 
                             if (block.BuiltBy == 0) {
 
-                                int pcuValue = 1;
-                                if (block.ComponentStack.IsFunctional)
-                                    pcuValue = block.BlockDefinition.PCU;
-
                                 /* 
-                                    * Hack: TransferBlocksBuiltByID only transfers authorship if it has an author. 
-                                    * Transfer Authorship Client just sets the author so we need to take care of limits ourselves. 
-                                    */
+                                * Hack: TransferBlocksBuiltByID only transfers authorship if it has an author. 
+                                * Transfer Authorship Client just sets the author so we need to take care of limits ourselves. 
+                                */
                                 block.TransferAuthorshipClient(newAuthorId);
-                                newAuthor.Identity.BlockLimits.IncreaseBlocksBuilt(block.BlockDefinition.BlockPairName, pcuValue, block.CubeGrid, true);
+                                block.AddAuthorship();
                             }
 
                             authors.Add(block.BuiltBy);

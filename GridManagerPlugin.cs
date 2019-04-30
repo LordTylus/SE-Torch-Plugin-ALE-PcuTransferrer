@@ -2,7 +2,6 @@
 using Sandbox.Game.Entities;
 using Sandbox.ModAPI;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using VRage.Groups;
 using VRage.ModAPI;
 using VRage.ObjectBuilders;
@@ -17,10 +16,11 @@ using Sandbox.Game.Entities.Cube;
 using VRage.Game;
 using Sandbox.Game.World;
 using static Sandbox.Game.World.MyBlockLimits;
-using Sandbox.Game;
 using Sandbox.Engine.Multiplayer;
 using VRage.Network;
 using System;
+using Task = System.Threading.Tasks.Task;
+using Parallel = ParallelTasks.Parallel;
 
 namespace ALE_GridManager {
 
@@ -185,50 +185,71 @@ namespace ALE_GridManager {
             foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) 
                 grids.Add(groupNodes.NodeData);
 
-            foreach (MyCubeGrid grid in grids) {
+            try {
 
-                HashSet<long> authors = new HashSet<long>();
+                if (pcu && ownership)
+                    Context.Respond("Start transferring PCU and Ownership to "+newAuthor.DisplayName+"!");
+                else if (pcu)
+                    Context.Respond("Start transferring PCU to " + newAuthor.DisplayName + "!");
+                else if (ownership)
+                    Context.Respond("Start transferring Ownership to " + newAuthor.DisplayName + "!");
 
-                HashSet<MySlimBlock> blocks = grid.GetBlocks();
-                foreach (MySlimBlock block in blocks) {
+                foreach (MyCubeGrid grid in grids) {
 
-                    if (ownership) {
+                    HashSet<long> authors = new HashSet<long>();
 
-                        MyCubeBlock cubeBlock = block.FatBlock;
-                        if (cubeBlock != null && cubeBlock.OwnerId != newAuthorId) {
+                    HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+                    foreach (MySlimBlock block in blocks) {
 
-                            grid.ChangeOwnerRequest(grid, cubeBlock, 0, MyOwnershipShareModeEnum.Faction);
-                            if (newAuthorId != 0)
-                                grid.ChangeOwnerRequest(grid, cubeBlock, newAuthorId, MyOwnershipShareModeEnum.Faction);
+                        if (block == null || block.CubeGrid == null || block.IsDestroyed )
+                            continue;
+
+                        if (ownership) {
+
+                            MyCubeBlock cubeBlock = block.FatBlock;
+                            if (cubeBlock != null && cubeBlock.OwnerId != newAuthorId) {
+
+                                grid.ChangeOwnerRequest(grid, cubeBlock, 0, MyOwnershipShareModeEnum.Faction);
+                                if (newAuthorId != 0)
+                                    grid.ChangeOwnerRequest(grid, cubeBlock, newAuthorId, MyOwnershipShareModeEnum.Faction);
+                            }
+                        }
+
+                        if (pcu) {
+
+                            if (block.BuiltBy == 0) {
+
+                                int pcuValue = 1;
+                                if (block.ComponentStack.IsFunctional)
+                                    pcuValue = block.BlockDefinition.PCU;
+
+                                /* 
+                                    * Hack: TransferBlocksBuiltByID only transfers authorship if it has an author. 
+                                    * Transfer Authorship Client just sets the author so we need to take care of limits ourselves. 
+                                    */
+                                block.TransferAuthorshipClient(newAuthorId);
+                                newAuthor.Identity.BlockLimits.IncreaseBlocksBuilt(block.BlockDefinition.BlockPairName, pcuValue, block.CubeGrid, true);
+                            }
+
+                            authors.Add(block.BuiltBy);
                         }
                     }
 
-                    if(pcu) {
-
-                        if (block.BuiltBy == 0) {
-
-                            /* 
-                             * Hack: TransferBlocksBuiltByID only transfers authorship if it has an author. 
-                             * Transfer Authorship Client just sets the author so we need to take care of limits ourselves. 
-                             */
-                            block.TransferAuthorshipClient(newAuthorId);
-                            newAuthor.Identity.BlockLimits.IncreaseBlocksBuilt(block.BlockDefinition.BlockPairName, block.BlockDefinition.PCU, block.CubeGrid, true);
-                        }
-
-                        authors.Add(block.BuiltBy);
-                    }
-
-                    foreach (long author in authors) 
+                    foreach (long author in authors)
                         MyMultiplayer.RaiseEvent(grid, x => new Action<long, long>(x.TransferBlocksBuiltByID), author, newAuthorId, new EndpointId());
-                }
-            }
+                }   
 
-            if(pcu && ownership)
-                Context.Respond("PCU and Ownership was transferred!");
-            else if(pcu)
-                Context.Respond("PCU was transferred!");
-            else if(ownership)
-                Context.Respond("Ownership was transferred!");
+                if (pcu && ownership)
+                    Context.Respond("PCU and Ownership was transferred!");
+                else if (pcu)
+                    Context.Respond("PCU was transferred!");
+                else if (ownership)
+                    Context.Respond("Ownership was transferred!");
+
+            } catch (Exception e) {
+                Context.Respond("Error Transferring Ship!");
+                Log.Error("Error on transferring ship", e);
+            }
 
             return true;
         }
@@ -355,7 +376,11 @@ namespace ALE_GridManager {
 
                     if (block.BuiltBy != authorId) {
 
-                        pcusOfGroup+= block.BlockDefinition.PCU;
+                        int pcu = 1;
+                        if (block.ComponentStack.IsFunctional)
+                            pcu = block.BlockDefinition.PCU;
+
+                        pcusOfGroup += pcu;
                         blockCountOfGroup++;
 
                         string blockType = block.BlockDefinition.BlockPairName;
@@ -366,6 +391,7 @@ namespace ALE_GridManager {
                         short remainingBlocks = (short)(limits[blockType] - 1);
 
                         if(remainingBlocks < 0) {
+                            Log.Info("Player '" + newAuthor.DisplayName + "' does not have high enough Limit for Block Type " + blockType + "!");
                             Context.Respond("Player does not have high enough Limit for Block Type "+ blockType + "!");
                             return false;
                         }
@@ -377,11 +403,23 @@ namespace ALE_GridManager {
             }
 
             if (blockLimits.MaxBlocks < blockLimits.BlocksBuilt + blockCountOfGroup) {
+
+                Log.Info("Player '" + newAuthor.DisplayName + "' does not have a high enough Blocklimit! " +
+                    "(Max: " + blockLimits.MaxBlocks + ", " +
+                    "Built: " + blockLimits.BlocksBuilt + ", " +
+                    "Grids: "+ blockCountOfGroup + ")");
+
                 Context.Respond("Player does not have a high enough Blocklimit!");
                 return false;
             }
 
             if (blockLimits.PCU < pcusOfGroup) {
+
+                Log.Info("Player '" + newAuthor.DisplayName + "' does not have a high enough PCU limit! " +
+                    "(Remaining: " + blockLimits.PCU + ", " +
+                    "Built: " + blockLimits.PCUBuilt + ", " +
+                    "Grids: " + pcusOfGroup + ")");
+
                 Context.Respond("Player does not have a high enough PCU limit!");
                 return false;
             }

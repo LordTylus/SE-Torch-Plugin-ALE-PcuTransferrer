@@ -53,23 +53,52 @@ namespace ALE_GridManager {
             return repair(groups, Context);
         }
 
-        public bool transfer(IMyCharacter character, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership) {
+        public bool transfer(IMyCharacter character, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindLookAtGridGroup(character);
 
-            return transfer(groups, Context, newAuthor, pcu, ownership);
+            return transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
 
-        public bool transfer(string gridName, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership) {
+        public bool transfer(string gridName, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = findGridGroups(gridName);
 
-            return transfer(groups, Context, newAuthor, pcu, ownership);
+            return transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
+
+        public void checkOwner(IMyCharacter character, CommandContext Context) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindLookAtGridGroup(character);
+
+            checkOwner(groups, Context);
+        }
+
+        public void checkOwner(string gridName, CommandContext Context) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = findGridGroups(gridName);
+
+            checkOwner(groups, Context);
+        }
+
+        public void checkAuthor(IMyCharacter character, CommandContext Context) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = FindLookAtGridGroup(character);
+
+            checkAuthor(groups, Context);
+        }
+
+        public void checkAuthor(string gridName, CommandContext Context) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = findGridGroups(gridName);
+
+            checkAuthor(groups, Context);
+        }
+
 
         public static bool checkGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, 
             out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, 
-            MyPlayer newAuthor, bool pcu) {
+            MyPlayer newAuthor, bool pcu, bool force) {
 
             /* No group or too many groups found */
             if (groups.Count < 1) {
@@ -94,7 +123,7 @@ namespace ALE_GridManager {
                 return false;
             }
 
-            if (pcu) {
+            if (pcu && !force) {
 
                 var blockLimits = newAuthor.Identity.BlockLimits;
 
@@ -104,12 +133,108 @@ namespace ALE_GridManager {
 
             return true;
         }
+        private void checkOwner(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
+
+            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
+
+            if (!checkGroups(groups, out group, Context, null, false, false))
+                return;
+
+            checkOwner(group, Context);
+        }
+
+        private void checkOwner(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
+
+            foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
+
+                MyCubeGrid grid = groupNodes.NodeData;
+
+                Dictionary<long, int> blocksPerAuthorMap = new Dictionary<long, int>();
+
+                HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+                foreach (MySlimBlock block in blocks) {
+
+                    if (block == null || block.CubeGrid == null || block.IsDestroyed)
+                        continue;
+
+                    if(block.FatBlock != null) {
+
+                        long ownerId = block.FatBlock.OwnerId;
+
+                        if (blocksPerAuthorMap.ContainsKey(ownerId))
+                            blocksPerAuthorMap[ownerId] += 1;
+                        else
+                            blocksPerAuthorMap.Add(ownerId, 1);
+                    }
+                }
+
+                Context.Respond("Owners at grid: " + grid.DisplayName);
+
+                List<KeyValuePair<long, int>> myList = blocksPerAuthorMap.ToList();
+
+                myList.Sort(delegate (KeyValuePair<long, int> pair1, KeyValuePair<long, int> pair2) {
+                    return pair2.Value.CompareTo(pair1.Value);
+                });
+
+                foreach (KeyValuePair<long, int> pair in myList)
+                    Context.Respond("   "+GetPlayerNameById(pair.Key) +" = "+ pair.Value + " blocks");
+            }
+        }
+
+        private void checkAuthor(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
+
+            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
+
+            if (!checkGroups(groups, out group, Context, null, false, false))
+                return;
+
+            checkAuthor(group, Context);
+        }
+
+        private void checkAuthor(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
+
+            foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
+
+                MyCubeGrid grid = groupNodes.NodeData;
+
+                Dictionary<long, int> blocksPerAuthorMap = new Dictionary<long, int>();
+
+                HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+                foreach (MySlimBlock block in blocks) {
+
+                    if (block == null || block.CubeGrid == null || block.IsDestroyed)
+                        continue;
+
+                    int pcu = 1;
+                    if (block.ComponentStack.IsFunctional)
+                        pcu = block.BlockDefinition.PCU;
+
+                    long ownerId = block.BuiltBy;
+
+                    if (blocksPerAuthorMap.ContainsKey(ownerId))
+                        blocksPerAuthorMap[ownerId] += pcu;
+                    else
+                        blocksPerAuthorMap.Add(ownerId, pcu);
+                }
+
+                Context.Respond("Authors at grid: " + grid.DisplayName);
+
+                List<KeyValuePair<long, int>> myList = blocksPerAuthorMap.ToList();
+
+                myList.Sort(delegate (KeyValuePair<long, int> pair1, KeyValuePair<long, int> pair2) {
+                    return pair2.Value.CompareTo(pair1.Value);
+                });
+
+                foreach (KeyValuePair<long, int> pair in myList)
+                    Context.Respond("   " + GetPlayerNameById(pair.Key) + " = " + pair.Value + " PCU");
+            }
+        }
 
         private bool repair(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
 
             MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
 
-            if (!checkGroups(groups, out group, Context, null, false))
+            if (!checkGroups(groups, out group, Context, null, false, false))
                 return false;
 
             return repair(group, Context);
@@ -161,11 +286,11 @@ namespace ALE_GridManager {
         }
 
         private bool transfer(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
-            CommandContext Context, MyPlayer newAuthor, bool pcu, bool ownership) {
+            CommandContext Context, MyPlayer newAuthor, bool pcu, bool ownership, bool force) {
 
             MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
 
-            if (!checkGroups(groups, out group, Context, newAuthor, pcu))
+            if (!checkGroups(groups, out group, Context, newAuthor, pcu, force))
                 return false;
 
             return transfer(group, Context, newAuthor, pcu, ownership);
@@ -421,6 +546,15 @@ namespace ALE_GridManager {
             }
 
             return true;
+        }
+
+        public static string GetPlayerNameById(long playerId) {
+
+            foreach (var identity in MySession.Static.Players.GetAllIdentities()) 
+                if (identity.IdentityId == playerId) 
+                    return identity.DisplayName;
+
+            return "Nobody";
         }
     }
 }

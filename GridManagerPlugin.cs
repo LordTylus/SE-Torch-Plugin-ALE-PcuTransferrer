@@ -149,6 +149,9 @@ namespace ALE_GridManager {
 
                 MyCubeGrid grid = groupNodes.NodeData;
 
+                if (grid.Physics == null)
+                    continue;
+
                 Dictionary<long, int> blocksPerAuthorMap = new Dictionary<long, int>();
 
                 HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
@@ -196,6 +199,9 @@ namespace ALE_GridManager {
             foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
 
                 MyCubeGrid grid = groupNodes.NodeData;
+
+                if (grid.Physics == null)
+                    continue;
 
                 Dictionary<long, int> blocksPerAuthorMap = new Dictionary<long, int>();
 

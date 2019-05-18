@@ -54,14 +54,14 @@ namespace ALE_GridManager {
             return GridUtils.repair(group, Context);
         }
 
-        public bool transfer(IMyCharacter character, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
+        public bool transfer(IMyCharacter character, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
 
             return transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
 
-        public bool transfer(string gridName, MyPlayer newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
+        public bool transfer(string gridName, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
 
@@ -69,7 +69,7 @@ namespace ALE_GridManager {
         }
 
         private bool transfer(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
-                CommandContext Context, MyPlayer newAuthor, bool pcu, bool ownership, bool force) {
+                CommandContext Context, MyIdentity newAuthor, bool pcu, bool ownership, bool force) {
 
             MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
 
@@ -128,8 +128,8 @@ namespace ALE_GridManager {
         }
 
         public static bool checkGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, 
-            out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, 
-            MyPlayer newAuthor, bool pcu, bool force) {
+            out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context,
+            MyIdentity newAuthor, bool pcu, bool force) {
 
             /* No group or too many groups found */
             if (groups.Count < 1) {
@@ -156,7 +156,7 @@ namespace ALE_GridManager {
 
             if (pcu && !force) {
 
-                var blockLimits = newAuthor.Identity.BlockLimits;
+                var blockLimits = newAuthor.BlockLimits;
 
                 if (!checkLimits(group, blockLimits, Context, newAuthor))
                     return false;
@@ -166,7 +166,7 @@ namespace ALE_GridManager {
         }
 
         private static bool checkLimits(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, 
-            MyBlockLimits blockLimits, CommandContext Context, MyPlayer newAuthor) {
+            MyBlockLimits blockLimits, CommandContext Context, MyIdentity newAuthor) {
 
             Dictionary<string, short> limits = new Dictionary<string, short>(Context.Torch.CurrentSession.KeenSession.BlockTypeLimits);
 
@@ -183,7 +183,7 @@ namespace ALE_GridManager {
                 limits.Add(blockType, remainingBlocks);
             }
 
-            long authorId = newAuthor.Identity.IdentityId;
+            long authorId = newAuthor.IdentityId;
             long pcusOfGroup = 0L;
             long blockCountOfGroup = 0L;
 

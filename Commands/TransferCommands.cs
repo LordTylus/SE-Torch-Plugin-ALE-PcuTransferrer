@@ -77,7 +77,7 @@ namespace ALE_PcuTransferrer.Commands {
             if (Context.Player != null)
                 playerId = Context.Player.IdentityId;
 
-            MyPlayer author = PlayerUtils.GetPlayerByNameOrId(playerName);
+            MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
             if (!checkConformation(playerId, author, gridName, null, pcu, force))
                 return;
@@ -113,7 +113,7 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
             }
 
-            MyPlayer author = PlayerUtils.GetPlayerByNameOrId(playerName);
+            MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
             if (!checkConformation(playerId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
                 return;
@@ -127,16 +127,16 @@ namespace ALE_PcuTransferrer.Commands {
             }
         }
 
-        private bool checkConformation(long executingPlayerId, MyPlayer author, string gridName, IMyCharacter character, bool pcu, bool force) {
+        private bool checkConformation(long executingPlayerId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
 
             if (author == null && pcu) {
-                Context.Respond("Player not Found!.");
+                Context.Respond("Player not Found!");
                 return false;
             }
 
             long authorId = 0L;
             if (author != null)
-                authorId = author.Identity.IdentityId;
+                authorId = author.IdentityId;
 
             string command = gridName + "_" + authorId;
 
@@ -176,7 +176,7 @@ namespace ALE_PcuTransferrer.Commands {
             return true;
         }
 
-        private bool checkGridFound(MyPlayer player, string gridName, IMyCharacter character, bool pcu, bool force) {
+        private bool checkGridFound(MyIdentity player, string gridName, IMyCharacter character, bool pcu, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups;
 

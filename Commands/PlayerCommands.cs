@@ -1,10 +1,14 @@
 ﻿using ALE_GridManager;
+using ALE_PcuTransferrer.Utils;
 using NLog;
 using Sandbox.Game.World;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using Torch.Commands;
 using Torch.Commands.Permissions;
+using Torch.Mod;
+using Torch.Mod.Messages;
 using VRage.Game.ModAPI;
 using static Sandbox.Game.World.MyBlockLimits;
 
@@ -63,6 +67,49 @@ namespace ALE_PcuTransferrer.Commands {
             fieldInfo.SetValue(blockLimits, -1000000);
 
             blockLimits.SetAllDirty();
+        }
+
+        [Command("checklimits", "Lets you Peak into the Limits of the given Player.")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void CheckLimits(string playerName) {
+
+            MyIdentity identity = PlayerUtils.GetIdentityByName(playerName);
+
+            if(identity == null) {
+                Context.Respond("Player not found!");
+                return;
+            }
+
+            MyBlockLimits blockLimits = identity.BlockLimits;
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Block Limits");
+            sb.AppendLine("---------------------------------------");
+            sb.AppendLine(blockLimits.BlocksBuilt.ToString("#,##0") + " / " + (blockLimits.BlockLimitModifier + blockLimits.MaxBlocks).ToString("#,##0") + " Blocks");
+            sb.AppendLine(blockLimits.PCU.ToString("#,##0") + " / " + (blockLimits.PCU + blockLimits.PCUBuilt).ToString("#,##0") + " PCU");
+            sb.AppendLine();
+            sb.AppendLine("Block Type Limits");
+            sb.AppendLine("---------------------------------------");
+
+            Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
+
+            foreach (string blockType in globalLimits.Keys) {
+
+                MyTypeLimitData limit = blockLimits.BlockTypeBuilt[blockType];
+
+                sb.AppendLine(blockType + " "+ limit.BlocksBuilt.ToString("#,##0") + " / " + globalLimits[blockType].ToString("#,##0") + " Blocks");
+            }
+
+            if (Context.Player == null) {
+
+                Context.Respond($"Limits for {playerName}");
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                ModCommunication.SendMessageTo(new DialogMessage("Blocklimits", $"Limits for {playerName}", sb.ToString()), Context.Player.SteamUserId);
+            }
         }
     }
 }

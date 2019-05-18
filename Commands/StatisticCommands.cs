@@ -15,6 +15,5 @@ namespace ALE_PcuTransferrer.Commands {
         public GridManagerPlugin Plugin => (GridManagerPlugin)Context.Plugin;
 
 
-
     }
 }

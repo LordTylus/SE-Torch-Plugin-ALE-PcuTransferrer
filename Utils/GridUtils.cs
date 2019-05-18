@@ -63,14 +63,14 @@ namespace ALE_PcuTransferrer.Utils {
             return true;
         }
 
-        public static bool transfer(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, MyPlayer newAuthor, bool pcu, bool ownership) {
+        public static bool transfer(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, MyIdentity newAuthor, bool pcu, bool ownership) {
 
             if (!pcu && !ownership) {
                 Context.Respond("The plugindev did an oopsie and nothing was changed!");
                 return false;
             }
 
-            long newAuthorId = newAuthor.Identity.IdentityId;
+            long newAuthorId = newAuthor.IdentityId;
 
             List<MyCubeGrid> grids = new List<MyCubeGrid>();
 
@@ -220,7 +220,7 @@ namespace ALE_PcuTransferrer.Utils {
                     return pair2.Value.CompareTo(pair1.Value);
                 });
 
-                foreach (KeyValuePair<long, int> pair in myList)
+                foreach (KeyValuePair<long, int> pair in myList) 
                     Context.Respond("   " + PlayerUtils.GetPlayerNameById(pair.Key) + " = " + pair.Value + " PCU");
             }
         }

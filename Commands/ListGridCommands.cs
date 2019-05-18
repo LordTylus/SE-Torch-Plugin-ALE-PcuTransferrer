@@ -26,6 +26,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             string playerName = null;
             bool gps = false;
+            bool position = false;
 
             List<string> args = Context.Args;
 
@@ -33,20 +34,34 @@ namespace ALE_PcuTransferrer.Commands {
 
                 playerName = args[0];
 
-            } else if (args.Count == 2) {
+            } else if (args.Count > 1) {
 
                 playerName = args[0];
 
-                if (args[1] == "-gps")
-                    gps = true;
+                for (int i = 1; i < args.Count; i++) {
+
+                    if (args[i] == "-gps")
+                        gps = true;
+
+                    if (args[i] == "-position")
+                        position = true;
+                }
 
             } else {
 
-                Context.Respond("Correct Usage is !listgridsowner <playerName> [-gps]");
+                Context.Respond("Correct Usage is !listgridsowner <playerName> [-gps] [-position]");
                 return;
             }
 
-            long id = PlayerUtils.GetPlayerIdByName(playerName);
+            IMyIdentity identity = PlayerUtils.GetIdentityByName(playerName);
+
+            if(identity == null) {
+
+                Context.Respond("Player not found!");
+                return;
+            }
+
+            long id = identity.IdentityId;
 
             StringBuilder sb = new StringBuilder();
 
@@ -73,14 +88,14 @@ namespace ALE_PcuTransferrer.Commands {
             sb.AppendLine("---------------------------------------");
 
             foreach (MyCubeGrid grid in bigOwnerGrids)
-                AddGridToSb(grid, sb, gps, id, false);
+                AddGridToSb(grid, sb, position, gps, id, false);
 
             sb.AppendLine("");
             sb.AppendLine("Less then 50 % Ownership");
             sb.AppendLine("---------------------------------------");
 
             foreach (MyCubeGrid grid in smallOwnerGrids)
-                AddGridToSb(grid, sb, gps, id, false);
+                AddGridToSb(grid, sb, position, gps, id, false);
 
             if (Context.Player == null) {
 
@@ -99,6 +114,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             string playerName = null;
             bool gps = false;
+            bool position = false;
 
             List<string> args = Context.Args;
 
@@ -106,20 +122,34 @@ namespace ALE_PcuTransferrer.Commands {
 
                 playerName = args[0];
 
-            } else if (args.Count == 2) {
+            } else if (args.Count > 1) {
 
                 playerName = args[0];
 
-                if (args[1] == "-gps")
-                    gps = true;
+                for (int i = 1; i < args.Count; i++) {
+
+                    if (args[i] == "-gps")
+                        gps = true;
+
+                    if (args[i] == "-position")
+                        position = true;
+                }
 
             } else {
 
-                Context.Respond("Correct Usage is !listgridsauthor <playerName> [-gps]");
+                Context.Respond("Correct Usage is !listgridsauthor <playerName> [-gps] [-position]");
                 return;
             }
 
-            long id = PlayerUtils.GetPlayerIdByName(playerName);
+            IMyIdentity identity = PlayerUtils.GetIdentityByName(playerName);
+
+            if (identity == null) {
+
+                Context.Respond("Player not found!");
+                return;
+            }
+
+            long id = identity.IdentityId;
 
             StringBuilder sb = new StringBuilder();
 
@@ -133,7 +163,7 @@ namespace ALE_PcuTransferrer.Commands {
                 if (grid.Physics == null)
                     continue;
 
-                AddGridToSb(grid, sb, gps, id, true);
+                AddGridToSb(grid, sb, position, gps, id, true);
             }
 
             if (Context.Player == null) {
@@ -147,8 +177,7 @@ namespace ALE_PcuTransferrer.Commands {
             }
         }
 
-
-        private void AddGridToSb(MyCubeGrid grid, StringBuilder sb, bool gps, long playerId, bool pcu) {
+        private void AddGridToSb(MyCubeGrid grid, StringBuilder sb, bool showPosition, bool showGps, long playerId, bool pcu) {
 
             HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
 
@@ -182,16 +211,22 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
 
             if (pcu)
-                sb.AppendLine($"{grid.DisplayName} - {value} PCU - Position {grid.PositionComp.GetPosition().ToString()}");
+                sb.AppendLine($"{grid.DisplayName} - {value} PCU");
             else
-                sb.AppendLine($"{grid.DisplayName} - {value} blocks - Position {grid.PositionComp.GetPosition().ToString()}");
+                sb.AppendLine($"{grid.DisplayName} - {value} blocks");
 
-            if (gps) {
+            if(showPosition) { 
 
-                var gridGPS = MyAPIGateway.Session?.GPS.Create(grid.DisplayName, ($"{grid.DisplayName} - {grid.GridSizeEnum} - {grid.BlocksCount} blocks"), grid.PositionComp.GetPosition(), true);
+                var position = grid.PositionComp.GetPosition();
 
-                if (Context.Player != null)
-                    MyAPIGateway.Session?.GPS.AddGps(Context.Player.IdentityId, gridGPS);
+                sb.AppendLine($"   X: {position.X.ToString("#,##0.00")}, Y: {position.Y.ToString("#,##0.00")}, Z: {position.Z.ToString("#,##0.00")}");
+            }
+
+            if (showGps && Context.Player != null) {
+
+                var gridGPS = MyAPIGateway.Session?.GPS.Create("--"+grid.DisplayName, ($"{grid.DisplayName} - {grid.GridSizeEnum} - {grid.BlocksCount} blocks"), grid.PositionComp.GetPosition(), true);
+
+                MyAPIGateway.Session?.GPS.AddGps(Context.Player.IdentityId, gridGPS);
             }
         }
     }

@@ -70,7 +70,7 @@ namespace ALE_PcuTransferrer.Commands {
         }
 
         [Command("checklimits", "Lets you Peak into the Limits of the given Player.")]
-        [Permission(MyPromoteLevel.SpaceMaster)]
+        [Permission(MyPromoteLevel.Moderator)]
         public void CheckLimits(string playerName) {
 
             MyIdentity identity = PlayerUtils.GetIdentityByName(playerName);

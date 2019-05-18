@@ -196,11 +196,7 @@ namespace ALE_GridManager {
 
                     if (block.BuiltBy != authorId) {
 
-                        int pcu = 1;
-                        if (block.ComponentStack.IsFunctional)
-                            pcu = block.BlockDefinition.PCU;
-
-                        pcusOfGroup += pcu;
+                        pcusOfGroup += BlockUtils.getPcu(block);
                         blockCountOfGroup++;
 
                         string blockType = block.BlockDefinition.BlockPairName;

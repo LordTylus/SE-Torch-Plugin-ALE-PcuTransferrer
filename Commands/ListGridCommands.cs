@@ -197,14 +197,8 @@ namespace ALE_PcuTransferrer.Commands {
                     continue;
                 }
 
-                if (block.BuiltBy == playerId) {
-
-                    int pcuValue = 1;
-                    if (block.ComponentStack.IsFunctional)
-                        pcuValue = block.BlockDefinition.PCU;
-
-                    value += pcuValue;
-                }
+                if (block.BuiltBy == playerId) 
+                    value += BlockUtils.getPcu(block);
             }
 
             if (value == 0)

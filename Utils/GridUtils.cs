@@ -200,10 +200,7 @@ namespace ALE_PcuTransferrer.Utils {
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
                         continue;
 
-                    int pcu = 1;
-                    if (block.ComponentStack.IsFunctional)
-                        pcu = block.BlockDefinition.PCU;
-
+                    int pcu = BlockUtils.getPcu(block);
                     long ownerId = block.BuiltBy;
 
                     if (blocksPerAuthorMap.ContainsKey(ownerId))

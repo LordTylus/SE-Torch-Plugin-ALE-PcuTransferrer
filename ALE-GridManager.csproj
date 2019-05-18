@@ -144,10 +144,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands.cs" />
+    <Compile Include="Commands\ListGridCommands.cs" />
+    <Compile Include="Commands\PlayerCommands.cs" />
+    <Compile Include="Commands\CheckCommands.cs" />
+    <Compile Include="Commands\StatisticCommands.cs" />
+    <Compile Include="Commands\TransferCommands.cs" />
+    <Compile Include="Commands\RepairCommands.cs" />
     <Compile Include="CurrentCooldown.cs" />
+    <Compile Include="GridFinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GridManagerPlugin.cs" />
+    <Compile Include="Utils\GridUtils.cs" />
+    <Compile Include="Utils\PlayerUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

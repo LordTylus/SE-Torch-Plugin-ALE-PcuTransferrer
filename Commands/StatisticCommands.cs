@@ -3,6 +3,7 @@ using ALE_PcuTransferrer.Utils;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
+using Sandbox.Game.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,40 +26,83 @@ namespace ALE_PcuTransferrer.Commands {
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void ListBlocks() {
 
-            List<String> args = Context.Args;
+            List<string> args = Context.Args;
 
             if (args.Count >= 1) {
 
                 string type = args[0];
 
                 bool countPcu = false;
+                string factionTag = null;
+                string playerName = null;
 
                 for (int i = 1; i < args.Count; i++) {
 
                     if (args[i] == "-pcu")
                         countPcu = true;
+
+                    if (args[i].StartsWith("-faction="))
+                        factionTag = args[i].Replace("-faction=", "");
+
+                    if (args[i].StartsWith("-player="))
+                        playerName = args[i].Replace("-player=", "");
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu);
+                    ListBlocks(false, countPcu, factionTag, playerName);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu);
+                    ListBlocks(true, countPcu, factionTag, playerName);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
             } else {
 
-                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu]");
+                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>]");
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName) {
 
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
             Dictionary<string, long> pcuCounts = new Dictionary<string, long>();
 
             int gridCount = 0;
+
+            HashSet<long> identities = null;
+
+            string title = "Blocks in World";
+
+            if (playerName != null) {
+
+                MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+                if (player == null) {
+
+                    Context.Respond("Player not found!");
+                    return;
+                }
+
+                title = "Block of Player " + playerName;
+
+                identities = new HashSet<long>();
+                identities.Add(player.IdentityId);
+
+            } else if (factionTag != null) {
+
+                IMyFaction faction = FactionUtils.GetIdentityByTag(factionTag);
+
+                if (faction == null) {
+
+                    Context.Respond("Faction not found!");
+                    return;
+                }
+
+                title = "Block of Faction " + factionTag;
+
+                identities = new HashSet<long>();
+                foreach (long identityId in faction.Members.Keys)
+                    identities.Add(identityId);
+            }
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
 
@@ -70,14 +114,19 @@ namespace ALE_PcuTransferrer.Commands {
                 if (grid.Physics == null)
                     continue;
 
-                gridCount++;
-
                 HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+
+                bool countGrid = false;
 
                 foreach (MySlimBlock block in blocks) {
 
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
                         continue;
+
+                    if (identities != null && !identities.Contains(block.BuiltBy))
+                        continue;
+
+                    countGrid = true;
 
                     string pairName = block.BlockDefinition.BlockPairName;
 
@@ -93,6 +142,9 @@ namespace ALE_PcuTransferrer.Commands {
                         pcuCounts[pairName] += BlockUtils.getPcu(block);
                     }
                 }
+
+                if(countGrid)
+                    gridCount++;
             }
 
             List<KeyValuePair<string, long>> myList = blockCounts.ToList();
@@ -134,9 +186,10 @@ namespace ALE_PcuTransferrer.Commands {
             sb.AppendLine();
             sb.AppendLine(gridCount.ToString("#,##0") + " Grids checked");
 
+
             if (Context.Player == null) {
 
-                Context.Respond($"Blocks in World");
+                Context.Respond(title);
                 Context.Respond(sb.ToString());
 
             } else {
@@ -145,7 +198,7 @@ namespace ALE_PcuTransferrer.Commands {
                 if (limitedOnly)
                     subtitle = "Only Limited Blocks";
 
-                ModCommunication.SendMessageTo(new DialogMessage("Blocks in World", subtitle, sb.ToString()), Context.Player.SteamUserId);
+                ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
         }
     }

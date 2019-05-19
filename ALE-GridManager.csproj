@@ -156,6 +156,7 @@
     <Compile Include="GridManagerPlugin.cs" />
     <Compile Include="Utils\BlockUtils.cs" />
     <Compile Include="Utils\GridUtils.cs" />
+    <Compile Include="Utils\FactionUtils.cs" />
     <Compile Include="Utils\PlayerUtils.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

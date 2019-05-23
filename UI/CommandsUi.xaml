@@ -1,0 +1,109 @@
+﻿<UserControl x:Class="ALE_PcuTransferrer.UI.CommandsUi"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ALE_PcuTransferrer.UI"
+             mc:Ignorable="d" 
+             d:DesignHeight="850" d:DesignWidth="800">
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="ALE PCU Transferrer" FontWeight="Bold" FontSize="16" Margin="5"/>
+
+        <ScrollViewer Grid.Column="0" Grid.Row ="1" VerticalScrollBarVisibility="Auto">
+
+            <Grid Name="Commands" ScrollViewer.CanContentScroll="True">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> <!-- 0 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 5 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 10 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 15 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="1" Text="!freebuild" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="1" TextWrapping="Wrap" Text="Increases all limits for the user to be able to paste limit exceeding grids. Use it again to disable." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="2" Text="!transfer &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="2" TextWrapping="Wrap" Text="Transfers all PCU and block ownership of the given grid or the grid you are looking at over to the player." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="3" Text="!transferpcu &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="3" TextWrapping="Wrap" Text="Transfers all PCU of the given grid or the grid you are looking at over to the player." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="4" Text="!transferowner &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="4" TextWrapping="Wrap" Text="Transfers all block ownership of the given grid or the grid you are looking at over to the player." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="5" Text="!forcetransfer &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="5" TextWrapping="Wrap" Text="Transfers all PCU and block ownership of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="6" Text="!forcetransferpcu &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="6" TextWrapping="Wrap" Text="Transfers all PCU of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row ="7" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="7" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="8" Text="!repair [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="8" TextWrapping="Wrap" Text="Repairs all damaged and deformed blocks of the given grid or the grid you are looking at." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="9" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="9" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="10" TextWrapping="Wrap" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="11" TextWrapping="Wrap" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="12" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="12" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="13" Text="!checkowner [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="13" TextWrapping="Wrap" Text="Lists the owners and amount of blocks they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="14" Text="!checkauthor [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="14" TextWrapping="Wrap" Text="Lists the authors and amount of PCU they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="15" Text="!checklimits &lt;PlayerName>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="15" TextWrapping="Wrap" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="16" Text="!listgridsowner &lt;PlayerName> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="16" TextWrapping="Wrap" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="17" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
+
+            </Grid>
+
+        </ScrollViewer>
+
+    </Grid>
+</UserControl>

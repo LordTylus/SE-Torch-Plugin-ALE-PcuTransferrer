@@ -12,12 +12,18 @@ using Sandbox.Game.World;
 using static Sandbox.Game.World.MyBlockLimits;
 using ALE_PcuTransferrer.Utils;
 using ALE_PcuTransferrer;
+using System.Windows.Controls;
+using Torch.API.Plugins;
+using ALE_PcuTransferrer.UI;
 
 namespace ALE_GridManager {
 
-    public class GridManagerPlugin : TorchPluginBase {
+    public class GridManagerPlugin : TorchPluginBase, IWpfPlugin {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+        private UserControl _control;
+        public UserControl GetControl() => _control ?? (_control = new CommandsUi());
 
         private Dictionary<long, CurrentCooldown> _confirmations = new Dictionary<long, CurrentCooldown>();
 

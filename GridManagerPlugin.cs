@@ -26,8 +26,10 @@ namespace ALE_GridManager {
         public UserControl GetControl() => _control ?? (_control = new CommandsUi());
 
         private Dictionary<long, CurrentCooldown> _confirmations = new Dictionary<long, CurrentCooldown>();
+        private ConcurrentDictionary<long, long> _playersOnFreebuild = new ConcurrentDictionary<long, long>();
 
         public Dictionary<long, CurrentCooldown> ConfirmationsMap { get { return _confirmations; } }
+        public ConcurrentDictionary<long, long> PlayersOnFreebuild { get { return _playersOnFreebuild; } }
 
         public long CooldownConfirmation { get { return 30 * 1000; } }
 

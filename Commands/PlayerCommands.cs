@@ -2,6 +2,7 @@
 using ALE_PcuTransferrer.Utils;
 using NLog;
 using Sandbox.Game.World;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -35,18 +36,36 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
             }
 
+            long playerId = player.Identity.IdentityId;
+
+            var playersOnFreebuild = Plugin.PlayersOnFreebuild;
+
+            int multiplier = 1;
+            if (playersOnFreebuild.ContainsKey(playerId))
+                multiplier = -1;
+
             MyBlockLimits blockLimits = player.Identity.BlockLimits;
 
             Dictionary<string, short> limits = new Dictionary<string, short>(Context.Torch.CurrentSession.KeenSession.BlockTypeLimits);
 
             foreach (string pairName in limits.Keys) {
 
+                MyTypeLimitData typeLimit = null;
+                blockLimits.BlockTypeBuilt.TryGetValue(pairName, out typeLimit);
+
+                int blocksBuilt = 0;
+
+                if (typeLimit != null)
+                    blocksBuilt = typeLimit.BlocksBuilt;
+
                 MyTypeLimitData data = new MyTypeLimitData();
                 data.BlockPairName = pairName;
-                data.BlocksBuilt = -10000;
+                data.BlocksBuilt = blocksBuilt - 10000 * multiplier;
 
                 blockLimits.SetTypeLimitsFromServer(data);
             }
+
+            int pcu = blockLimits.PCU;
 
             FieldInfo fieldInfo = blockLimits.GetType().GetField("m_PCU", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -55,7 +74,9 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
             }
 
-            fieldInfo.SetValue(blockLimits, 1000000);
+            fieldInfo.SetValue(blockLimits, pcu + 1000000 * multiplier);
+
+            int blocksBuild = blockLimits.BlocksBuilt;
 
             fieldInfo = blockLimits.GetType().GetField("m_blocksBuilt", BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -64,9 +85,22 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
             }
 
-            fieldInfo.SetValue(blockLimits, -1000000);
+            fieldInfo.SetValue(blockLimits, blocksBuild - 1000000 * multiplier);
 
             blockLimits.SetAllDirty();
+
+            if (multiplier == 1) {
+
+                playersOnFreebuild.TryAdd(playerId, playerId);
+
+                Context.Respond("Freebuild enabled! (Run command again to disable)");
+
+            } else {
+
+                playersOnFreebuild.Remove(playerId);
+
+                Context.Respond("Freebuild disabled!");
+            }
         }
 
         [Command("checklimits", "Lets you Peak into the Limits of the given Player.")]

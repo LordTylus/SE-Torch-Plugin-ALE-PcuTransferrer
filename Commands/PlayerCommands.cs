@@ -120,8 +120,8 @@ namespace ALE_PcuTransferrer.Commands {
 
             sb.AppendLine("Block Limits");
             sb.AppendLine("---------------------------------------");
-            sb.AppendLine(blockLimits.BlocksBuilt.ToString("#,##0") + " / " + (blockLimits.BlockLimitModifier + blockLimits.MaxBlocks).ToString("#,##0") + " Blocks");
-            sb.AppendLine(blockLimits.PCU.ToString("#,##0") + " / " + (blockLimits.PCU + blockLimits.PCUBuilt).ToString("#,##0") + " PCU");
+            sb.AppendLine(blockLimits.BlocksBuilt.ToString("#,##0") + " / " + (blockLimits.BlockLimitModifier + blockLimits.MaxBlocks).ToString("#,##0") + " Blocks ("+ (blockLimits.BlockLimitModifier + blockLimits.MaxBlocks - blockLimits.BlocksBuilt).ToString("#,##0") + " Remaining)");
+            sb.AppendLine(blockLimits.PCUBuilt.ToString("#,##0") + " / " + (blockLimits.PCU + blockLimits.PCUBuilt).ToString("#,##0") + " PCU (" + blockLimits.PCU.ToString("#,##0") + " Remaining)");
             sb.AppendLine();
             sb.AppendLine("Block Type Limits");
             sb.AppendLine("---------------------------------------");

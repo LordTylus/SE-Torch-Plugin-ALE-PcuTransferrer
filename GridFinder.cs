@@ -47,9 +47,6 @@ namespace ALE_PcuTransferrer {
             startPosition = worldMatrix.Translation + worldMatrix.Forward * 0.5f;
             endPosition = worldMatrix.Translation + worldMatrix.Forward * (range + 0.5f);
 
-            var entites = new HashSet<IMyEntity>();
-            MyAPIGateway.Entities.GetEntities(entites, e => e != null);
-
             var list = new Dictionary<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group, double>();
             var ray = new RayD(startPosition, worldMatrix.Forward);
 

@@ -35,6 +35,7 @@ namespace ALE_PcuTransferrer.Commands {
                 bool countPcu = false;
                 string factionTag = null;
                 string playerName = null;
+                string orderby = "blocks";
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -46,22 +47,30 @@ namespace ALE_PcuTransferrer.Commands {
 
                     if (args[i].StartsWith("-player="))
                         playerName = args[i].Replace("-player=", "");
+
+                    if (args[i].StartsWith("-orderby="))
+                        orderby = args[i].Replace("-orderby=", "");
+                }
+
+                if (orderby != "blocks" && orderby != "pcu" && orderby != "name") {
+                    Context.Respond("You can only order by 'pcu', 'name' or 'blocks'! Will use blocks as default.");
+                    orderby = "blocks";
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu, factionTag, playerName);
+                    ListBlocks(false, countPcu, factionTag, playerName, orderby);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu, factionTag, playerName);
+                    ListBlocks(true, countPcu, factionTag, playerName, orderby);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
             } else {
 
-                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>]");
+                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>]");
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string orderby) {
 
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
@@ -147,10 +156,17 @@ namespace ALE_PcuTransferrer.Commands {
                     gridCount++;
             }
 
-            List<KeyValuePair<string, long>> myList = blockCounts.ToList();
+            List<string> myList = new List<string>(blockCounts.Keys);
 
-            myList.Sort(delegate (KeyValuePair<string, long> pair1, KeyValuePair<string, long> pair2) {
-                return pair2.Value.CompareTo(pair1.Value);
+            myList.Sort(delegate (string pair1, string pair2) {
+
+                if(orderby == "name") 
+                    return pair1.CompareTo(pair2);
+
+                if (orderby == "pcu")
+                    return pcuCounts[pair2].CompareTo(pcuCounts[pair1]);
+
+                return blockCounts[pair2].CompareTo(blockCounts[pair1]);
             });
 
             StringBuilder sb = new StringBuilder();
@@ -158,23 +174,27 @@ namespace ALE_PcuTransferrer.Commands {
             long totalPCU = 0;
             long totalValue = 0;
 
-            foreach (KeyValuePair<string, long> keyValuePair in myList) {
+            foreach (string pair in myList) {
 
                 string pcuString = "";
 
                 if (countPCU) {
 
-                    pcuString = " " + pcuCounts[keyValuePair.Key].ToString("#,##0") + " PCU";
+                    long pcu = pcuCounts[pair];
 
-                    totalPCU += pcuCounts[keyValuePair.Key];
+                    pcuString = " " + pcu.ToString("#,##0") + " PCU";
+
+                    totalPCU += pcu;
                 }
 
-                if (limitedOnly)
-                    sb.AppendLine(keyValuePair.Value.ToString("#,##0") + " / (" + globalLimits[keyValuePair.Key] + ")   " + keyValuePair.Key + pcuString);
-                else
-                    sb.AppendLine(keyValuePair.Value.ToString("#,##0") + "   " + keyValuePair.Key + pcuString);
+                long blocks = blockCounts[pair];
 
-                totalValue += keyValuePair.Value;
+                if (limitedOnly)
+                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + " / (" + globalLimits[pair] + ")   " + pair + pcuString);
+                else
+                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + pair + pcuString);
+
+                totalValue += blocks;
             }
 
             sb.AppendLine();

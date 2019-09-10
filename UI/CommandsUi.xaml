@@ -77,10 +77,10 @@
                 <TextBlock Grid.Column="0" Grid.Row ="9" Text="" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="9" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="10" TextWrapping="Wrap" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="11" TextWrapping="Wrap" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="12" Text="" Margin="5" />

@@ -47,6 +47,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 20 -->
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
@@ -104,7 +105,10 @@
 
                 <TextBlock Grid.Column="0" Grid.Row ="18" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
-                
+
+                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+
             </Grid>
 
         </ScrollViewer>

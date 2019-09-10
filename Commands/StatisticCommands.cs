@@ -214,9 +214,173 @@ namespace ALE_PcuTransferrer.Commands {
 
             } else {
 
-                String subtitle = "All Blocks";
+                string subtitle = "All Blocks";
                 if (limitedOnly)
                     subtitle = "Only Limited Blocks";
+
+                ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
+            }
+        }
+
+        [Command("findblock", "Lists which Faction/Player has a defined block in the world. ")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void FindBlocks() {
+
+            List<string> args = Context.Args;
+
+            if (args.Count >= 1) {
+
+                string type = args[0];
+
+                string factionTag = null;
+                string playerName = null;
+                string groupby = "player";
+
+                for (int i = 1; i < args.Count; i++) {
+
+                    if (args[i].StartsWith("-faction="))
+                        factionTag = args[i].Replace("-faction=", "");
+
+                    if (args[i].StartsWith("-player="))
+                        playerName = args[i].Replace("-player=", "");
+
+                    if (args[i].StartsWith("-groupby="))
+                        groupby = args[i].Replace("-groupby=", "");
+                }
+
+                if (groupby != "player" && groupby != "faction") {
+                    Context.Respond("You can only group by 'player', 'faction'! Will use player as default.");
+                    groupby = "player";
+                }
+
+                FindBlocks(type, factionTag, playerName, groupby);
+
+            } else {
+
+                Context.Respond("Correct Usage is !findblock <blockpairname> [-player=<playerName>] [-faction=<factionTag>] [-groupby=<player|faction>]");
+            }
+        }
+
+        private void FindBlocks(string type, string factionTag, string playerName, string groupby) {
+
+            Dictionary<string, long> blockCounts = new Dictionary<string, long>();
+
+            int gridCount = 0;
+
+            HashSet<long> identities = null;
+
+            string title = "Blocks in World";
+
+            if (playerName != null) {
+
+                MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+                if (player == null) {
+
+                    Context.Respond("Player not found!");
+                    return;
+                }
+
+                title = "Block of Player " + playerName;
+
+                identities = new HashSet<long>();
+                identities.Add(player.IdentityId);
+
+            } else if (factionTag != null) {
+
+                IMyFaction faction = FactionUtils.GetIdentityByTag(factionTag);
+
+                if (faction == null) {
+
+                    Context.Respond("Faction not found!");
+                    return;
+                }
+
+                title = "Block of Faction " + factionTag;
+
+                identities = new HashSet<long>();
+                foreach (long identityId in faction.Members.Keys)
+                    identities.Add(identityId);
+            }
+
+            foreach (MyEntity entity in MyEntities.GetEntities()) {
+
+                MyCubeGrid grid = entity as MyCubeGrid;
+
+                if (grid == null)
+                    continue;
+
+                if (grid.Physics == null)
+                    continue;
+
+                HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+
+                bool countGrid = false;
+
+                foreach (MySlimBlock block in blocks) {
+
+                    if (block == null || block.CubeGrid == null || block.IsDestroyed)
+                        continue;
+
+                    if (identities != null && !identities.Contains(block.BuiltBy))
+                        continue;
+
+                    string pairName = block.BlockDefinition.BlockPairName;
+
+                    if (pairName == null || pairName.ToLower() != type.ToLower())
+                        continue;
+
+                    countGrid = true;
+                    string key;
+
+                    key = FactionUtils.GetPlayerFactionTag(block.BuiltBy);
+
+                    if (groupby != "faction")
+                        key = key.PadRight(5) +" "+ PlayerUtils.GetPlayerNameById(block.BuiltBy);
+
+                    if (!blockCounts.ContainsKey(key))
+                        blockCounts.Add(key, 0);
+
+                    blockCounts[key]++;
+                }
+
+                if (countGrid)
+                    gridCount++;
+            }
+
+            List<string> myList = new List<string>(blockCounts.Keys);
+
+            myList.Sort(delegate (string pair1, string pair2) {
+                return blockCounts[pair2].CompareTo(blockCounts[pair1]);
+            });
+
+            StringBuilder sb = new StringBuilder();
+
+            long totalValue = 0;
+
+            foreach (string key in myList) {
+
+                long blocks = blockCounts[key];
+
+                sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key);
+
+                totalValue += blocks;
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Total: " + totalValue.ToString("#,##0") + " Blocks");
+
+            sb.AppendLine();
+            sb.AppendLine(gridCount.ToString("#,##0") + " Grids checked");
+
+
+            if (Context.Player == null) {
+
+                Context.Respond(title);
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                string subtitle = "Type: "+type;
 
                 ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }

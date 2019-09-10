@@ -3,7 +3,9 @@ using ALE_PcuTransferrer.Utils;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
+using Sandbox.Game.World;
 using Sandbox.ModAPI;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Torch.Commands;
@@ -221,6 +223,161 @@ namespace ALE_PcuTransferrer.Commands {
                 var gridGPS = MyAPIGateway.Session?.GPS.Create("--"+grid.DisplayName, ($"{grid.DisplayName} - {grid.GridSizeEnum} - {grid.BlocksCount} blocks"), grid.PositionComp.GetPosition(), true);
 
                 MyAPIGateway.Session?.GPS.AddGps(Context.Player.IdentityId, gridGPS);
+            }
+        }
+
+        [Command("listgrids", "Lists all grids you have in your world and allows some filters for them.")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void ListGrids() {
+
+            List<string> args = Context.Args;
+
+            string factionTag = null;
+            string playerName = null;
+            string orderby = "blocks";
+
+            for (int i = 0; i < args.Count; i++) {
+
+                if (args[i].StartsWith("-faction="))
+                    factionTag = args[i].Replace("-faction=", "");
+
+                if (args[i].StartsWith("-player="))
+                    playerName = args[i].Replace("-player=", "");
+
+                if (args[i].StartsWith("-orderby="))
+                    orderby = args[i].Replace("-orderby=", "");
+            }
+
+            if (orderby != "blocks" && orderby != "pcu" && orderby != "name" && orderby != "faction" && orderby != "owner") {
+                Context.Respond("You can only order by 'pcu', 'name', 'faction', 'owner' or 'blocks'! Will use blocks as default.");
+                orderby = "blocks";
+            }
+
+            ListGrids(factionTag, playerName, orderby);
+        }
+
+        private void ListGrids(string factionTag, string playerName, string orderby) {
+
+            List<MyCubeGrid> grids = new List<MyCubeGrid>();
+            /* Very cheaply. shame on me */
+            Dictionary<long, string> ownerNames = new Dictionary<long, string>();
+            Dictionary<long, string> factionNames = new Dictionary<long, string>();
+
+            HashSet<long> identities = null;
+
+            string title = "Grids in World";
+
+            if (playerName != null) {
+
+                MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+                if (player == null) {
+
+                    Context.Respond("Player not found!");
+                    return;
+                }
+
+                title = "Grids of Player " + playerName;
+
+                identities = new HashSet<long>();
+                identities.Add(player.IdentityId);
+
+            } else if (factionTag != null) {
+
+                IMyFaction faction = FactionUtils.GetIdentityByTag(factionTag);
+
+                if (faction == null) {
+
+                    Context.Respond("Faction not found!");
+                    return;
+                }
+
+                title = "Grids of Faction " + factionTag;
+
+                identities = new HashSet<long>();
+                foreach (long identityId in faction.Members.Keys)
+                    identities.Add(identityId);
+            }
+
+            foreach (MyEntity entity in MyEntities.GetEntities()) {
+
+                MyCubeGrid grid = entity as MyCubeGrid;
+
+                if (grid == null)
+                    continue;
+
+                if (grid.Physics == null)
+                    continue;
+
+                if(identities != null && !identities.Overlaps(grid.BigOwners)) 
+                    continue;
+
+                var gridOwnerList = grid.BigOwners;
+                var gridOwner = gridOwnerList.Count > 0 ? gridOwnerList[0] : 0L;
+
+                grids.Add(grid);
+
+                long entityId = grid.EntityId;
+
+                ownerNames.Add(entityId, PlayerUtils.GetPlayerNameById(gridOwner));
+                factionNames.Add(entityId, FactionUtils.GetPlayerFactionTag(gridOwner));
+            }
+
+            grids.Sort(delegate (MyCubeGrid grid1, MyCubeGrid grid2) {
+
+                if (orderby == "name")
+                    return grid1.DisplayName.CompareTo(grid2.DisplayName);
+
+                if (orderby == "pcu")
+                    return grid2.BlocksPCU.CompareTo(grid1.BlocksPCU);
+
+                if (orderby == "owner")
+                    return ownerNames[grid1.EntityId].CompareTo(ownerNames[grid2.EntityId]);
+
+                if (orderby == "faction")
+                    return factionNames[grid1.EntityId].CompareTo(factionNames[grid2.EntityId]);
+
+                return grid2.BlocksCount.CompareTo(grid1.BlocksCount);
+            });
+
+            StringBuilder sb = new StringBuilder();
+
+            long totalPCU = 0;
+            long totalValue = 0;
+
+            foreach (MyCubeGrid grid in grids) {
+
+                string pcuString = "";
+
+                long pcu = grid.BlocksPCU;
+                pcuString = " " + pcu.ToString("#,##0") + " PCU";
+                totalPCU += pcu;
+
+                long blocks = grid.BlocksCount;
+
+                sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + grid.DisplayName);
+                sb.AppendLine("".PadRight(10) + factionNames[grid.EntityId].PadRight(5) +" - "+ownerNames[grid.EntityId] + pcuString);
+
+                totalValue += blocks;
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Total: " + totalValue.ToString("#,##0") + " Blocks");
+            sb.AppendLine("Total: " + totalPCU.ToString("#,##0") + " PCU");
+
+            sb.AppendLine();
+            sb.AppendLine(grids.Count.ToString("#,##0") + " Grids checked");
+
+
+            if (Context.Player == null) {
+
+                Context.Respond(title);
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                string subtitle = "All Grids";
+
+                ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
         }
     }

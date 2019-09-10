@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ALE_PcuTransferrer.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="850" d:DesignWidth="800">
+             d:DesignHeight="1550" d:DesignWidth="800">
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -43,6 +43,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/> <!-- 15 -->
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -101,6 +102,9 @@
                 <TextBlock Grid.Column="0" Grid.Row ="17" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
+                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
+                
             </Grid>
 
         </ScrollViewer>

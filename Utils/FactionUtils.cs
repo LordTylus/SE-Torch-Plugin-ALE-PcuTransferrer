@@ -5,6 +5,15 @@ namespace ALE_PcuTransferrer.Utils
 {
     class FactionUtils
     {
+        public static string GetPlayerFactionTag(long playerId) {
+
+            var faction = MySession.Static.Factions.TryGetPlayerFaction(playerId);
+
+            if (faction == null)
+                return "";
+
+            return faction.Tag;
+        }
 
         public static IMyFaction GetIdentityByTag(string tag) {
             return MySession.Static.Factions.TryGetFactionByTag(tag);

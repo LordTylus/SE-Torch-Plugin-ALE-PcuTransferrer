@@ -15,6 +15,7 @@ using ALE_PcuTransferrer;
 using System.Windows.Controls;
 using Torch.API.Plugins;
 using ALE_PcuTransferrer.UI;
+using VRage.ObjectBuilders;
 
 namespace ALE_GridManager {
 
@@ -59,7 +60,7 @@ namespace ALE_GridManager {
             if (!checkGroups(groups, out group, Context, null, false, false))
                 return false;
 
-            return GridUtils.repair(group, Context);
+            return GridUtils.Repair(group, Context);
         }
 
         public bool transfer(IMyCharacter character, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
@@ -84,7 +85,7 @@ namespace ALE_GridManager {
             if (!checkGroups(groups, out group, Context, newAuthor, pcu, force))
                 return false;
 
-            return GridUtils.transfer(group, Context, newAuthor, pcu, ownership);
+            return GridUtils.Transfer(group, Context, newAuthor, pcu, ownership);
         }
 
         public void checkOwner(IMyCharacter character, CommandContext Context) {
@@ -108,7 +109,7 @@ namespace ALE_GridManager {
             if (!checkGroups(groups, out group, Context, null, false, false))
                 return;
 
-            GridUtils.checkOwner(group, Context);
+            GridUtils.CheckOwner(group, Context);
         }
 
         public void checkAuthor(IMyCharacter character, CommandContext Context) {
@@ -132,7 +133,7 @@ namespace ALE_GridManager {
             if (!checkGroups(groups, out group, Context, null, false, false))
                 return;
 
-            GridUtils.checkAuthor(group, Context);
+            GridUtils.CheckAuthor(group, Context);
         }
 
         public static bool checkGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, 
@@ -204,7 +205,7 @@ namespace ALE_GridManager {
 
                     if (block.BuiltBy != authorId) {
 
-                        pcusOfGroup += BlockUtils.getPcu(block);
+                        pcusOfGroup += BlockUtils.GetPcu(block);
                         blockCountOfGroup++;
 
                         string blockType = block.BlockDefinition.BlockPairName;

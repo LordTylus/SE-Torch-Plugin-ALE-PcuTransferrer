@@ -26,7 +26,7 @@ namespace ALE_PcuTransferrer.Commands {
         [Permission(MyPromoteLevel.Moderator)]
         public void InspectOwner() {
 
-            string playerName = null;
+            string playerName;
             bool gps = false;
             bool position = false;
 
@@ -114,7 +114,7 @@ namespace ALE_PcuTransferrer.Commands {
         [Permission(MyPromoteLevel.Moderator)]
         public void InspectAuthor() {
 
-            string playerName = null;
+            string playerName;
             bool gps = false;
             bool position = false;
 
@@ -200,7 +200,7 @@ namespace ALE_PcuTransferrer.Commands {
                 }
 
                 if (block.BuiltBy == playerId) 
-                    value += BlockUtils.getPcu(block);
+                    value += BlockUtils.GetPcu(block);
             }
 
             if (value == 0)

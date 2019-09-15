@@ -48,6 +48,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/> <!-- 20 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
@@ -108,6 +111,15 @@
 
                 <TextBlock Grid.Column="0" Grid.Row ="19" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="20" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!unprotect [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
 
             </Grid>
 

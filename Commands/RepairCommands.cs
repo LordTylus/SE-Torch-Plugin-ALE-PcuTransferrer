@@ -17,7 +17,7 @@ namespace ALE_GridManager.Commands {
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void Repair() {
 
-            List<String> args = Context.Args;
+            List<string> args = Context.Args;
 
             if (args.Count == 0) {
 
@@ -36,17 +36,12 @@ namespace ALE_GridManager.Commands {
 
         public void RepairGridName(string gridName) {
 
-            long playerId = 0L;
-
-            if (Context.Player != null)
-                playerId = Context.Player.IdentityId;
-
             try {
 
                 Plugin.repair(gridName, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
@@ -54,16 +49,11 @@ namespace ALE_GridManager.Commands {
 
             IMyPlayer player = Context.Player;
 
-            long playerId = 0L;
-
             if (player == null) {
 
                 Context.Respond("Console has no Character so cannot use this command. Use !repair <gridname> instead!");
                 return;
-
-            } else {
-                playerId = player.IdentityId;
-            }
+            } 
 
             IMyCharacter character = player.Character;
 
@@ -77,7 +67,7 @@ namespace ALE_GridManager.Commands {
                 Plugin.repair(character, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
     }

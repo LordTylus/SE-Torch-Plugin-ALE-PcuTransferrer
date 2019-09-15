@@ -18,9 +18,7 @@ namespace ALE_PcuTransferrer.Utils {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
-        public static bool repair(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
-
-            List<MyObjectBuilder_EntityBase> objectBuilderList = new List<MyObjectBuilder_EntityBase>();
+        public static bool Repair(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
 
             foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
 
@@ -63,7 +61,7 @@ namespace ALE_PcuTransferrer.Utils {
             return true;
         }
 
-        public static bool transfer(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, MyIdentity newAuthor, bool pcu, bool ownership) {
+        public static bool Transfer(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, MyIdentity newAuthor, bool pcu, bool ownership) {
 
             if (!pcu && !ownership) {
                 Context.Respond("The plugindev did an oopsie and nothing was changed!");
@@ -136,13 +134,13 @@ namespace ALE_PcuTransferrer.Utils {
 
             } catch (Exception e) {
                 Context.Respond("Error Transferring Ship!");
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
 
             return true;
         }
 
-        public static void checkOwner(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
+        public static void CheckOwner(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
 
             foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
 
@@ -183,7 +181,7 @@ namespace ALE_PcuTransferrer.Utils {
             }
         }
 
-        public static void checkAuthor(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
+        public static void CheckAuthor(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
 
             foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes) {
 
@@ -200,7 +198,7 @@ namespace ALE_PcuTransferrer.Utils {
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
                         continue;
 
-                    int pcu = BlockUtils.getPcu(block);
+                    int pcu = BlockUtils.GetPcu(block);
                     long ownerId = block.BuiltBy;
 
                     if (blocksPerAuthorMap.ContainsKey(ownerId))

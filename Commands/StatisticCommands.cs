@@ -148,7 +148,7 @@ namespace ALE_PcuTransferrer.Commands {
                             pcuCounts.Add(pairName, 0);
 
                         blockCounts[pairName]++;
-                        pcuCounts[pairName] += BlockUtils.getPcu(block);
+                        pcuCounts[pairName] += BlockUtils.GetPcu(block);
                     }
                 }
 

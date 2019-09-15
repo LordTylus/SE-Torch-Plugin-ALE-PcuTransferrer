@@ -17,7 +17,7 @@ namespace ALE_PcuTransferrer.Commands {
         [Permission(MyPromoteLevel.Moderator)]
         public void CheckOwner() {
 
-            List<String> args = Context.Args;
+            List<string> args = Context.Args;
 
             if (args.Count == 0) {
 
@@ -41,7 +41,7 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.checkOwner(gridName, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
@@ -67,7 +67,7 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.checkOwner(character, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
@@ -75,7 +75,7 @@ namespace ALE_PcuTransferrer.Commands {
         [Permission(MyPromoteLevel.Moderator)]
         public void CheckAuthor() {
 
-            List<String> args = Context.Args;
+            List<string> args = Context.Args;
 
             if (args.Count == 0) {
 
@@ -99,7 +99,7 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.checkAuthor(gridName, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
@@ -125,7 +125,7 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.checkAuthor(character, Context);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
     }

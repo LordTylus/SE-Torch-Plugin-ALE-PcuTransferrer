@@ -79,7 +79,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
-            if (!checkConformation(playerId, author, gridName, null, pcu, force))
+            if (!CheckConformation(playerId, author, gridName, null, pcu, force))
                 return;
 
             try {
@@ -87,7 +87,7 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.transfer(gridName, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
@@ -95,7 +95,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             IMyPlayer player = Context.Player;
 
-            long playerId = 0L;
+            long playerId;
 
             if (player == null) {
 
@@ -115,7 +115,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
-            if (!checkConformation(playerId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
+            if (!CheckConformation(playerId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
                 return;
 
             try {
@@ -123,11 +123,11 @@ namespace ALE_PcuTransferrer.Commands {
                 Plugin.transfer(character, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
-                Log.Error("Error on transferring ship", e);
+                Log.Error(e, "Error on transferring ship");
             }
         }
 
-        private bool checkConformation(long executingPlayerId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
+        private bool CheckConformation(long executingPlayerId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
 
             if (author == null && pcu) {
                 Context.Respond("Player not Found!");
@@ -142,7 +142,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             var confirmationCooldownMap = Plugin.ConfirmationsMap;
 
-            CurrentCooldown confirmationCooldown = null;
+            CurrentCooldown confirmationCooldown;
 
             if (confirmationCooldownMap.TryGetValue(executingPlayerId, out confirmationCooldown)) {
 
@@ -150,7 +150,7 @@ namespace ALE_PcuTransferrer.Commands {
 
                 if (remainingSeconds == 0) {
 
-                    if (!checkGridFound(author, gridName, character, pcu, force))
+                    if (!CheckGridFound(author, gridName, character, pcu, force))
                         return false;
 
                     Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
@@ -160,7 +160,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             } else {
 
-                if (!checkGridFound(author, gridName, character, pcu, force))
+                if (!CheckGridFound(author, gridName, character, pcu, force))
                     return false;
 
                 confirmationCooldown = new CurrentCooldown(Plugin.CooldownConfirmation);
@@ -176,7 +176,7 @@ namespace ALE_PcuTransferrer.Commands {
             return true;
         }
 
-        private bool checkGridFound(MyIdentity player, string gridName, IMyCharacter character, bool pcu, bool force) {
+        private bool CheckGridFound(MyIdentity player, string gridName, IMyCharacter character, bool pcu, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups;
 

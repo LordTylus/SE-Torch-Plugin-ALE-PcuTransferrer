@@ -150,6 +150,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\ListGridCommands.cs" />
+    <Compile Include="Commands\ProtectCommands.cs" />
     <Compile Include="Commands\PlayerCommands.cs" />
     <Compile Include="Commands\CheckCommands.cs" />
     <Compile Include="Commands\StatisticCommands.cs" />

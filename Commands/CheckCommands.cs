@@ -38,7 +38,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.checkOwner(gridName, Context);
+                Plugin.CheckOwner(gridName, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -64,7 +64,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.checkOwner(character, Context);
+                Plugin.CheckOwner(character, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -96,7 +96,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.checkAuthor(gridName, Context);
+                Plugin.CheckAuthor(gridName, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -122,7 +122,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.checkAuthor(character, Context);
+                Plugin.CheckAuthor(character, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");

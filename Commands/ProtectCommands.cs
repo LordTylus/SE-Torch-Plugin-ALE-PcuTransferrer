@@ -174,11 +174,8 @@ namespace ALE_PcuTransferrer.Commands {
 
                 MyCubeGrid grid = groupNodes.NodeData;
 
-                if(!allowDamage)
-                    grid.DestructibleBlocks = false;
-
-                if (!allowEdit)
-                    grid.Editable = false;
+                grid.DestructibleBlocks = allowDamage;
+                grid.Editable = allowEdit;
             }
 
             Context.Respond("Grid is now protected!");

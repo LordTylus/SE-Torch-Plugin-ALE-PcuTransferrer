@@ -26,11 +26,8 @@ namespace ALE_GridManager {
         private UserControl _control;
         public UserControl GetControl() => _control ?? (_control = new CommandsUi());
 
-        private Dictionary<long, CurrentCooldown> _confirmations = new Dictionary<long, CurrentCooldown>();
-        private ConcurrentDictionary<long, long> _playersOnFreebuild = new ConcurrentDictionary<long, long>();
-
-        public Dictionary<long, CurrentCooldown> ConfirmationsMap { get { return _confirmations; } }
-        public ConcurrentDictionary<long, long> PlayersOnFreebuild { get { return _playersOnFreebuild; } }
+        public Dictionary<long, CurrentCooldown> ConfirmationsMap { get; } = new Dictionary<long, CurrentCooldown>();
+        public ConcurrentDictionary<long, long> PlayersOnFreebuild { get; } = new ConcurrentDictionary<long, long>();
 
         public long CooldownConfirmation { get { return 30 * 1000; } }
 
@@ -39,104 +36,97 @@ namespace ALE_GridManager {
             base.Init(torch);
         }
 
-        public bool repair(IMyCharacter character, CommandContext Context) {
+        public bool Repair(IMyCharacter character, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
 
-            return repair(groups, Context);
+            return Repair(groups, Context);
         }
 
-        public bool repair(string gridName, CommandContext Context) {
+        public bool Repair(string gridName, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
 
-            return repair(groups, Context);
+            return Repair(groups, Context);
         }
 
-        private bool repair(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
+        private bool Repair(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
 
-            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
-
-            if (!checkGroups(groups, out group, Context, null, false, false))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, Context, null, false, false))
                 return false;
 
             return GridUtils.Repair(group, Context);
         }
 
-        public bool transfer(IMyCharacter character, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
+        public bool Transfer(IMyCharacter character, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
 
-            return transfer(groups, Context, newAuthor, pcu, ownership, force);
+            return Transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
 
-        public bool transfer(string gridName, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
+        public bool Transfer(string gridName, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
 
-            return transfer(groups, Context, newAuthor, pcu, ownership, force);
+            return Transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
 
-        private bool transfer(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
+        private bool Transfer(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
                 CommandContext Context, MyIdentity newAuthor, bool pcu, bool ownership, bool force) {
 
-            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
 
-            if (!checkGroups(groups, out group, Context, newAuthor, pcu, force))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, Context, newAuthor, pcu, force))
                 return false;
 
             return GridUtils.Transfer(group, Context, newAuthor, pcu, ownership);
         }
 
-        public void checkOwner(IMyCharacter character, CommandContext Context) {
+        public void CheckOwner(IMyCharacter character, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
 
-            checkOwner(groups, Context);
+            CheckOwner(groups, Context);
         }
 
-        public void checkOwner(string gridName, CommandContext Context) {
+        public void CheckOwner(string gridName, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
 
-            checkOwner(groups, Context);
+            CheckOwner(groups, Context);
         }
 
-        private void checkOwner(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
+        private void CheckOwner(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
 
-            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
-
-            if (!checkGroups(groups, out group, Context, null, false, false))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, Context, null, false, false))
                 return;
 
             GridUtils.CheckOwner(group, Context);
         }
 
-        public void checkAuthor(IMyCharacter character, CommandContext Context) {
+        public void CheckAuthor(IMyCharacter character, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
 
-            checkAuthor(groups, Context);
+            CheckAuthor(groups, Context);
         }
 
-        public void checkAuthor(string gridName, CommandContext Context) {
+        public void CheckAuthor(string gridName, CommandContext Context) {
 
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
 
-            checkAuthor(groups, Context);
+            CheckAuthor(groups, Context);
         }
 
-        private void checkAuthor(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
+        private void CheckAuthor(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, CommandContext Context) {
 
-            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
-
-            if (!checkGroups(groups, out group, Context, null, false, false))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, Context, null, false, false))
                 return;
 
             GridUtils.CheckAuthor(group, Context);
         }
 
-        public static bool checkGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, 
+        public static bool CheckGroups(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups, 
             out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context,
             MyIdentity newAuthor, bool pcu, bool force) {
 
@@ -167,19 +157,21 @@ namespace ALE_GridManager {
 
                 var blockLimits = newAuthor.BlockLimits;
 
-                if (!checkLimits(group, blockLimits, Context, newAuthor))
+                if (!CheckLimits(group, blockLimits, Context, newAuthor))
                     return false;
             }
 
             return true;
         }
 
-        private static bool checkLimits(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, 
+        private static bool CheckLimits(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, 
             MyBlockLimits blockLimits, CommandContext Context, MyIdentity newAuthor) {
 
             Dictionary<string, short> limits = new Dictionary<string, short>(Context.Torch.CurrentSession.KeenSession.BlockTypeLimits);
 
             foreach (string blockType in blockLimits.BlockTypeBuilt.Keys) {
+
+                Log.Error(blockType);
 
                 MyTypeLimitData limit = blockLimits.BlockTypeBuilt[blockType];
 
@@ -227,7 +219,7 @@ namespace ALE_GridManager {
                 }
             }
 
-            if (blockLimits.MaxBlocks < blockLimits.BlocksBuilt + blockCountOfGroup) {
+            if (blockLimits.MaxBlocks > 0 && blockLimits.MaxBlocks < blockLimits.BlocksBuilt + blockCountOfGroup) {
 
                 Log.Info("Player '" + newAuthor.DisplayName + "' does not have a high enough Blocklimit! " +
                     "(Max: " + blockLimits.MaxBlocks + ", " +

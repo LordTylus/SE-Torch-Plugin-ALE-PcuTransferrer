@@ -84,7 +84,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.transfer(gridName, author, Context, pcu, ownership, force);
+                Plugin.Transfer(gridName, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -120,7 +120,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             try {
 
-                Plugin.transfer(character, author, Context, pcu, ownership, force);
+                Plugin.Transfer(character, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -142,9 +142,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             var confirmationCooldownMap = Plugin.ConfirmationsMap;
 
-            CurrentCooldown confirmationCooldown;
-
-            if (confirmationCooldownMap.TryGetValue(executingPlayerId, out confirmationCooldown)) {
+            if (confirmationCooldownMap.TryGetValue(executingPlayerId, out CurrentCooldown confirmationCooldown)) {
 
                 long remainingSeconds = confirmationCooldown.getRemainingSeconds(command);
 
@@ -185,9 +183,7 @@ namespace ALE_PcuTransferrer.Commands {
             else
                 groups = GridFinder.findLookAtGridGroup(character);
 
-            MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group = null;
-
-            if (!GridManagerPlugin.checkGroups(groups, out group, Context, player, pcu, force))
+            if (!GridManagerPlugin.CheckGroups(groups, out _, Context, player, pcu, force))
                 return false;
 
             return true;

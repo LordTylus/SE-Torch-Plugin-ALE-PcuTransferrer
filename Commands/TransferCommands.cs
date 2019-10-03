@@ -63,7 +63,6 @@ namespace ALE_PcuTransferrer.Commands {
             TransferNobodyInternal(true, false);
         }
 
-
         [Command("transferownernobody", "Transfers owner of a ship over to nobody.")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void TransferOwnerNobody() {

@@ -51,6 +51,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 25 -->
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
@@ -67,59 +70,68 @@
                 <TextBlock Grid.Column="0" Grid.Row ="4" Text="!transferowner &lt;PlayerName> [GridName]" Margin="5"/>
                 <TextBlock Grid.Column="1" Grid.Row ="4" TextWrapping="Wrap" Text="Transfers all block ownership of the given grid or the grid you are looking at over to the player." Margin="5"/>
 
-                <TextBlock Grid.Column="0" Grid.Row ="5" Text="!forcetransfer &lt;PlayerName> [GridName]" Margin="5"/>
-                <TextBlock Grid.Column="1" Grid.Row ="5" TextWrapping="Wrap" Text="Transfers all PCU and block ownership of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
+                <TextBlock Grid.Column="0" Grid.Row ="5" Text="!transfernobody [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="5" TextWrapping="Wrap" Text="Transfers all PCU and block ownership of the given grid or the grid you are looking at over to nobody." Margin="5"/>
 
-                <TextBlock Grid.Column="0" Grid.Row ="6" Text="!forcetransferpcu &lt;PlayerName> [GridName]" Margin="5"/>
-                <TextBlock Grid.Column="1" Grid.Row ="6" TextWrapping="Wrap" Text="Transfers all PCU of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
+                <TextBlock Grid.Column="0" Grid.Row ="6" Text="!transfernobodypcu [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="6" TextWrapping="Wrap" Text="Transfers all PCU of the given grid or the grid you are looking at over to nobody." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="7" Text="!transfernobodyowner [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="7" TextWrapping="Wrap" Text="Transfers all block ownership of the given grid or the grid you are looking at over to nobody." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="8" Text="!forcetransfer &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="8" TextWrapping="Wrap" Text="Transfers all PCU and block ownership of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
+
+                <TextBlock Grid.Column="0" Grid.Row ="9" Text="!forcetransferpcu &lt;PlayerName> [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="9" TextWrapping="Wrap" Text="Transfers all PCU of the given grid or the grid you are looking at over to the player while ignoring limits." Margin="5"/>
                 
-                <TextBlock Grid.Column="0" Grid.Row ="7" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="7" TextWrapping="Wrap" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="10" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="10" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="8" Text="!repair [GridName]" Margin="5"/>
-                <TextBlock Grid.Column="1" Grid.Row ="8" TextWrapping="Wrap" Text="Repairs all damaged and deformed blocks of the given grid or the grid you are looking at." Margin="5" />
-
-                <TextBlock Grid.Column="0" Grid.Row ="9" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="9" TextWrapping="Wrap" Text="" Margin="5" />
-
-                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="10" TextWrapping="Wrap" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
-
-                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="11" TextWrapping="Wrap" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!repair [GridName]" Margin="5"/>
+                <TextBlock Grid.Column="1" Grid.Row ="11" TextWrapping="Wrap" Text="Repairs all damaged and deformed blocks of the given grid or the grid you are looking at." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="12" Text="" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="12" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="13" Text="!checkowner [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="13" TextWrapping="Wrap" Text="Lists the owners and amount of blocks they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="13" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="13" TextWrapping="Wrap" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="14" Text="!checkauthor [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="14" TextWrapping="Wrap" Text="Lists the authors and amount of PCU they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="14" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="14" TextWrapping="Wrap" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="15" Text="!checklimits &lt;PlayerName>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="15" TextWrapping="Wrap" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="15" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="15" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="16" Text="!listgridsowner &lt;PlayerName> [-gps] [-position]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="16" TextWrapping="Wrap" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="16" Text="!checkowner [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="16" TextWrapping="Wrap" Text="Lists the owners and amount of blocks they own in descending order of the given grid or the grid you are looking at." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="17" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="17" Text="!checkauthor [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Text="Lists the authors and amount of PCU they own in descending order of the given grid or the grid you are looking at." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!checklimits &lt;PlayerName>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!listgridsowner &lt;PlayerName> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="20" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="20" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!unprotect [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="23" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="24" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!unprotect [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
 
             </Grid>
 

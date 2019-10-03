@@ -11,18 +11,18 @@ namespace ALE_GridManager {
         private long _startTime;
         private long _currentCooldown;
 
-        private String command;
+        private string command;
 
         public CurrentCooldown(long cooldown) {
-            this._currentCooldown = cooldown;
+            _currentCooldown = cooldown;
         }
 
-        public void startCooldown(String command) {
+        public void StartCooldown(string command) {
             this.command = command;
-            this._startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            _startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         }
 
-        public long getRemainingSeconds(String command) {
+        public long GetRemainingSeconds(string command) {
 
             if (this.command != command)
                 return 0;

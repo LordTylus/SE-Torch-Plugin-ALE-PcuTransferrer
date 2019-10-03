@@ -82,10 +82,10 @@
                 <TextBlock Grid.Column="0" Grid.Row ="9" Text="" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="9" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="10" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="10" TextWrapping="Wrap" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="11" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="11" TextWrapping="Wrap" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="12" Text="" Margin="5" />
@@ -106,10 +106,10 @@
                 <TextBlock Grid.Column="0" Grid.Row ="17" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="20" Text="" Margin="5" />

@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using Torch.API.Plugins;
 using ALE_PcuTransferrer.UI;
 using VRage.ObjectBuilders;
+using System;
 
 namespace ALE_GridManager {
 
@@ -80,6 +81,30 @@ namespace ALE_GridManager {
                 return false;
 
             return GridUtils.Transfer(group, Context, newAuthor, pcu, ownership);
+        }
+
+        public bool TransferNobody(IMyCharacter character, CommandContext Context, bool pcu, bool ownership) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+
+            return TransferNobody(groups, Context, pcu, ownership);
+        }
+
+        public bool TransferNobody(string gridName, CommandContext Context, bool pcu, bool ownership) {
+
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+
+            return TransferNobody(groups, Context, pcu, ownership);
+        }
+
+        private bool TransferNobody(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
+                CommandContext Context, bool pcu, bool ownership) {
+
+
+            if (!CheckGroupsNobody(groups, out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, Context))
+                return false;
+
+            return GridUtils.TransferNobody(group, Context, pcu, ownership);
         }
 
         public void CheckOwner(IMyCharacter character, CommandContext Context) {
@@ -164,14 +189,42 @@ namespace ALE_GridManager {
             return true;
         }
 
+
+        public static bool CheckGroupsNobody(ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups,
+            out MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context) {
+
+            /* No group or too many groups found */
+            if (groups.Count < 1) {
+
+                Context.Respond("Could not find the Grid.");
+                group = null;
+
+                return false;
+            }
+
+            /* too many groups found */
+            if (groups.Count > 1) {
+
+                Context.Respond("Found multiple Grids with same Name. Make sure the name is unique.");
+                group = null;
+
+                return false;
+            }
+
+            if (!groups.TryPeek(out group)) {
+                Context.Respond("Could not work with found grid for unknown reason.");
+                return false;
+            }
+
+            return true;
+        }
+
         private static bool CheckLimits(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, 
             MyBlockLimits blockLimits, CommandContext Context, MyIdentity newAuthor) {
 
             Dictionary<string, short> limits = new Dictionary<string, short>(Context.Torch.CurrentSession.KeenSession.BlockTypeLimits);
 
             foreach (string blockType in blockLimits.BlockTypeBuilt.Keys) {
-
-                Log.Error(blockType);
 
                 MyTypeLimitData limit = blockLimits.BlockTypeBuilt[blockType];
 

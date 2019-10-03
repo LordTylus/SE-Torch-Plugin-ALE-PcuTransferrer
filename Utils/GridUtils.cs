@@ -68,6 +68,9 @@ namespace ALE_PcuTransferrer.Utils {
                 return false;
             }
 
+            HashSet<long> knownIdentities = new HashSet<long>();
+            HashSet<long> unknownIdentities = new HashSet<long>();
+
             long newAuthorId = newAuthor.IdentityId;
 
             List<MyCubeGrid> grids = new List<MyCubeGrid>();
@@ -107,7 +110,29 @@ namespace ALE_PcuTransferrer.Utils {
 
                         if (pcu) {
 
-                            if (block.BuiltBy == 0) {
+                            long oldAuthor = block.BuiltBy;
+
+                            bool forceTransfer = oldAuthor == 0 || unknownIdentities.Contains(oldAuthor);
+
+                            if (!forceTransfer && oldAuthor != newAuthorId) {
+
+                                if(!knownIdentities.Contains(oldAuthor)) {
+
+                                    var identity = PlayerUtils.GetIdentityById(oldAuthor);
+
+                                    if(identity == null) {
+
+                                        unknownIdentities.Add(oldAuthor);
+                                        forceTransfer = true;
+
+                                    } else {
+
+                                        knownIdentities.Add(oldAuthor);
+                                    }
+                                }
+                            }
+
+                            if (forceTransfer) {
 
                                 /* 
                                 * Hack: TransferBlocksBuiltByID only transfers authorship if it has an author. 
@@ -116,8 +141,8 @@ namespace ALE_PcuTransferrer.Utils {
                                 block.TransferAuthorshipClient(newAuthorId);
                                 block.AddAuthorship();
                             }
-
-                            authors.Add(block.BuiltBy);
+                        
+                            authors.Add(oldAuthor);
                         }
                     }
 
@@ -131,6 +156,85 @@ namespace ALE_PcuTransferrer.Utils {
                     Context.Respond("PCU was transferred!");
                 else if (ownership)
                     Context.Respond("Ownership was transferred!");
+
+            } catch (Exception e) {
+                Context.Respond("Error Transferring Ship!");
+                Log.Error(e, "Error on transferring ship");
+            }
+
+            return true;
+        }
+
+        public static bool TransferNobody(MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group group, CommandContext Context, bool pcu, bool ownership) {
+
+            if (!pcu && !ownership) {
+                Context.Respond("The plugindev did an oopsie and nothing was changed!");
+                return false;
+            }
+
+            List<MyCubeGrid> grids = new List<MyCubeGrid>();
+
+            foreach (MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Node groupNodes in group.Nodes)
+                grids.Add(groupNodes.NodeData);
+
+            try {
+
+                if (pcu && ownership)
+                    Context.Respond("Start transferring PCU and Ownership to nobody!");
+                else if (pcu)
+                    Context.Respond("Start transferring PCU to nobody!");
+                else if (ownership)
+                    Context.Respond("Start transferring Ownership to nobody!");
+
+                foreach (MyCubeGrid grid in grids) {
+
+                    HashSet<long> authors = new HashSet<long>();
+
+                    HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+                    foreach (MySlimBlock block in blocks) {
+
+                        if (block == null || block.CubeGrid == null || block.IsDestroyed)
+                            continue;
+
+                        if (ownership) {
+
+                            MyCubeBlock cubeBlock = block.FatBlock;
+                            if (cubeBlock != null && cubeBlock.OwnerId != 0) 
+                                grid.ChangeOwnerRequest(grid, cubeBlock, 0, MyOwnershipShareModeEnum.Faction);
+                        }
+
+                        if (pcu) {
+
+                            long oldAuthor = block.BuiltBy;
+
+                            if (oldAuthor != 0) {
+
+                                block.RemoveAuthorship();
+                                block.TransferAuthorshipClient(0L);
+
+                                authors.Add(oldAuthor);
+                            }
+                        }
+                    }
+
+                    foreach (long author in authors) {
+
+                        MyIdentity identity = PlayerUtils.GetIdentityById(author);
+
+                        if (identity == null)
+                            continue;
+
+                        identity.BlockLimits.SetAllDirty();
+                        identity.BlockLimits.CallLimitsChanged();
+                    }
+                }
+
+                if (pcu && ownership)
+                    Context.Respond("PCU and Ownership was removed!");
+                else if (pcu)
+                    Context.Respond("PCU was removed!");
+                else if (ownership)
+                    Context.Respond("Ownership was re,m!");
 
             } catch (Exception e) {
                 Context.Respond("Error Transferring Ship!");

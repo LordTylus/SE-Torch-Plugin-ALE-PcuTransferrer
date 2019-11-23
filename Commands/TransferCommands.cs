@@ -73,39 +73,29 @@ namespace ALE_PcuTransferrer.Commands {
 
             List<string> args = Context.Args;
 
-            if (args.Count == 1) {
-
+            if (args.Count == 1) 
                 TransferLookedAt(args[0], pcu, ownership, force);
 
-            } else if (args.Count == 2) {
-
+            else if (args.Count == 2) 
                 TransferGridName(args[1], args[0], pcu, ownership, force);
 
-            } else {
-
-                if (args.Count != 2)
-                    Context.Respond("Correct Usage is !transfer <playerName> [gridName]");
-            }
+            else 
+                Context.Respond("Correct Usage is !transfer <playerName> [gridName]");
         }
 
         public void TransferNobodyInternal(bool pcu, bool ownership) {
 
             List<string> args = Context.Args;
 
-            if (args.Count == 0) {
-
+            if (args.Count == 0) 
                 TransferNobodyLookedAt(pcu, ownership);
 
-            } else if (args.Count == 1) {
-
+            else if (args.Count == 1)
                 TransferNobodyGridName(args[0], pcu, ownership);
 
-            } else {
-
-                if (args.Count != 2)
-                    Context.Respond("Correct Usage is !transfernobody [gridName]");
-            }
-        }
+            else 
+                Context.Respond("Correct Usage is !transfernobody [gridName]");
+         }
 
         public void TransferGridName(string gridName, string playerName, bool pcu, bool ownership, bool force) {
 
@@ -219,14 +209,12 @@ namespace ALE_PcuTransferrer.Commands {
 
         private bool CheckConformation(long executingPlayerId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
 
-            if (author == null && pcu) {
+            if (author == null) {
                 Context.Respond("Player not Found!");
                 return false;
             }
 
-            long authorId = 0L;
-            if (author != null)
-                authorId = author.IdentityId;
+            long authorId = author.IdentityId;
 
             string command = gridName + "_" + authorId;
 

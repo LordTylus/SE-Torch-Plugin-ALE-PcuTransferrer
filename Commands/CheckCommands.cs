@@ -1,12 +1,11 @@
-﻿using ALE_GridManager;
-using NLog;
+﻿using NLog;
 using System;
 using System.Collections.Generic;
 using Torch.Commands;
 using Torch.Commands.Permissions;
 using VRage.Game.ModAPI;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
     public class CheckCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();

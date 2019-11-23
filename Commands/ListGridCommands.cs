@@ -1,11 +1,9 @@
-﻿using ALE_GridManager;
-using ALE_PcuTransferrer.Utils;
+﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using Sandbox.ModAPI;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using Torch.Commands;
@@ -15,7 +13,8 @@ using Torch.Mod.Messages;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
+
     public class ListGridCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();

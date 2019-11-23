@@ -1,20 +1,17 @@
-﻿using ALE_GridManager;
-using ALE_PcuTransferrer.Utils;
+﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.World;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Torch.Commands;
 using Torch.Commands.Permissions;
 using VRage.Game.ModAPI;
 using VRage.Groups;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
+
     public class TransferCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -295,9 +292,9 @@ namespace ALE_PcuTransferrer.Commands {
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups;
 
             if (character == null)
-                groups = GridFinder.findGridGroup(gridName);
+                groups = GridFinder.FindGridGroup(gridName);
             else
-                groups = GridFinder.findLookAtGridGroup(character);
+                groups = GridFinder.FindLookAtGridGroup(character);
 
             if (!GridManagerPlugin.CheckGroups(groups, out _, Context, player, pcu, force))
                 return false;
@@ -310,9 +307,9 @@ namespace ALE_PcuTransferrer.Commands {
             ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups;
 
             if (character == null)
-                groups = GridFinder.findGridGroup(gridName);
+                groups = GridFinder.FindGridGroup(gridName);
             else
-                groups = GridFinder.findLookAtGridGroup(character);
+                groups = GridFinder.FindLookAtGridGroup(character);
 
             if (!GridManagerPlugin.CheckGroupsNobody(groups, out _, Context))
                 return false;

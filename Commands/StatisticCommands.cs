@@ -1,12 +1,9 @@
-﻿using ALE_GridManager;
-using ALE_PcuTransferrer.Utils;
+﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Torch.Commands;
 using Torch.Commands.Permissions;
@@ -15,7 +12,8 @@ using Torch.Mod.Messages;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
+
     public class StatisticCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -93,8 +91,9 @@ namespace ALE_PcuTransferrer.Commands {
 
                 title = "Block of Player " + playerName;
 
-                identities = new HashSet<long>();
-                identities.Add(player.IdentityId);
+                identities = new HashSet<long> {
+                    player.IdentityId
+                };
 
             } else if (factionTag != null) {
 
@@ -115,9 +114,7 @@ namespace ALE_PcuTransferrer.Commands {
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
 
-                MyCubeGrid grid = entity as MyCubeGrid;
-
-                if (grid == null)
+                if (!(entity is MyCubeGrid grid))
                     continue;
 
                 if (grid.Physics == null)

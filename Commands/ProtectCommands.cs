@@ -1,22 +1,16 @@
-﻿using ALE_GridManager;
-using ALE_PcuTransferrer.Utils;
+﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.Entities;
-using Sandbox.Game.World;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
 using Torch.Commands;
 using Torch.Commands.Permissions;
-using Torch.Mod;
-using Torch.Mod.Messages;
 using VRage.Game.ModAPI;
 using VRage.Groups;
-using static Sandbox.Game.World.MyBlockLimits;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
+
     public class ProtectCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -151,23 +145,21 @@ namespace ALE_PcuTransferrer.Commands {
 
         internal void Protect(string gridName, CommandContext context, bool allowEdit, bool allowDamage) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.findGridGroupMechanical(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.FindGridGroupMechanical(gridName);
 
             Protect(groups, context, allowEdit, allowDamage);
         }
 
         internal void Protect(IMyCharacter character, CommandContext context, bool allowEdit, bool allowDamage) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.findLookAtGridGroupMechanical(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroupMechanical(character);
 
             Protect(groups, context, allowEdit, allowDamage);
         }
 
         private void Protect(ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups, CommandContext Context, bool allowEdit, bool allowDamage) {
 
-            MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group group;
-
-            if (!CheckGroups(groups, out group, Context))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group group, Context))
                 return;
 
             foreach (MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Node groupNodes in group.Nodes) {
@@ -183,23 +175,21 @@ namespace ALE_PcuTransferrer.Commands {
 
         internal void Unprotect(string gridName, CommandContext context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.findGridGroupMechanical(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.FindGridGroupMechanical(gridName);
 
             Unprotect(groups, context);
         }
 
         internal void Unprotect(IMyCharacter character, CommandContext context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.findLookAtGridGroupMechanical(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroupMechanical(character);
 
             Unprotect(groups, context);
         }
 
         private void Unprotect(ConcurrentBag<MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group> groups, CommandContext Context) {
 
-            MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group group;
-
-            if (!CheckGroups(groups, out group, Context))
+            if (!CheckGroups(groups, out MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Group group, Context))
                 return;
 
             foreach (MyGroups<MyCubeGrid, MyGridMechanicalGroupData>.Node groupNodes in group.Nodes) {

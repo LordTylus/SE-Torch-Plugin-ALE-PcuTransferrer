@@ -1,8 +1,6 @@
-﻿using ALE_GridManager;
-using ALE_PcuTransferrer.Utils;
+﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.World;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -13,7 +11,8 @@ using Torch.Mod.Messages;
 using VRage.Game.ModAPI;
 using static Sandbox.Game.World.MyBlockLimits;
 
-namespace ALE_PcuTransferrer.Commands {
+namespace ALE_GridManager.Commands {
+
     public class PlayerCommands : CommandModule {
 
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
@@ -29,9 +28,7 @@ namespace ALE_PcuTransferrer.Commands {
                 return;
             }
 
-            MyPlayer player = Context.Player as MyPlayer;
-
-            if (player == null) {
+            if (!(Context.Player is MyPlayer player)) {
                 Context.Respond("No player found!");
                 return;
             }
@@ -50,17 +47,17 @@ namespace ALE_PcuTransferrer.Commands {
 
             foreach (string pairName in limits.Keys) {
 
-                MyTypeLimitData typeLimit = null;
-                blockLimits.BlockTypeBuilt.TryGetValue(pairName, out typeLimit);
+                blockLimits.BlockTypeBuilt.TryGetValue(pairName, out MyTypeLimitData typeLimit);
 
                 int blocksBuilt = 0;
 
                 if (typeLimit != null)
                     blocksBuilt = typeLimit.BlocksBuilt;
 
-                MyTypeLimitData data = new MyTypeLimitData();
-                data.BlockPairName = pairName;
-                data.BlocksBuilt = blocksBuilt - 10000 * multiplier;
+                MyTypeLimitData data = new MyTypeLimitData {
+                    BlockPairName = pairName,
+                    BlocksBuilt = blocksBuilt - 10000 * multiplier
+                };
 
                 blockLimits.SetTypeLimitsFromServer(data);
             }

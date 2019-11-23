@@ -10,13 +10,10 @@ using Torch.Commands;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using static Sandbox.Game.World.MyBlockLimits;
-using ALE_PcuTransferrer.Utils;
-using ALE_PcuTransferrer;
 using System.Windows.Controls;
 using Torch.API.Plugins;
-using ALE_PcuTransferrer.UI;
-using VRage.ObjectBuilders;
-using System;
+using ALE_GridManager.UI;
+using ALE_Core.Utils;
 
 namespace ALE_GridManager {
 
@@ -39,14 +36,14 @@ namespace ALE_GridManager {
 
         public bool Repair(IMyCharacter character, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroup(character);
 
             return Repair(groups, Context);
         }
 
         public bool Repair(string gridName, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindGridGroup(gridName);
 
             return Repair(groups, Context);
         }
@@ -61,14 +58,14 @@ namespace ALE_GridManager {
 
         public bool Transfer(IMyCharacter character, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroup(character);
 
             return Transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
 
         public bool Transfer(string gridName, MyIdentity newAuthor, CommandContext Context, bool pcu, bool ownership, bool force) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindGridGroup(gridName);
 
             return Transfer(groups, Context, newAuthor, pcu, ownership, force);
         }
@@ -85,14 +82,14 @@ namespace ALE_GridManager {
 
         public bool TransferNobody(IMyCharacter character, CommandContext Context, bool pcu, bool ownership) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroup(character);
 
             return TransferNobody(groups, Context, pcu, ownership);
         }
 
         public bool TransferNobody(string gridName, CommandContext Context, bool pcu, bool ownership) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindGridGroup(gridName);
 
             return TransferNobody(groups, Context, pcu, ownership);
         }
@@ -109,14 +106,14 @@ namespace ALE_GridManager {
 
         public void CheckOwner(IMyCharacter character, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroup(character);
 
             CheckOwner(groups, Context);
         }
 
         public void CheckOwner(string gridName, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindGridGroup(gridName);
 
             CheckOwner(groups, Context);
         }
@@ -131,14 +128,14 @@ namespace ALE_GridManager {
 
         public void CheckAuthor(IMyCharacter character, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findLookAtGridGroup(character);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindLookAtGridGroup(character);
 
             CheckAuthor(groups, Context);
         }
 
         public void CheckAuthor(string gridName, CommandContext Context) {
 
-            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.findGridGroup(gridName);
+            ConcurrentBag<MyGroups<MyCubeGrid, MyGridPhysicalGroupData>.Group> groups = GridFinder.FindGridGroup(gridName);
 
             CheckAuthor(groups, Context);
         }

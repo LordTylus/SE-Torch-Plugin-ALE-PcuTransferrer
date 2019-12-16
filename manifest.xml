@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<PluginManifest xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>ALE PCU Transferrer</Name>
+  <Guid>480afc34-87df-4fff-a2b5-82048e456ced</Guid>
+  <Repository>None</Repository>
+  <Version>v1.1.4.3</Version>
+</PluginManifest>

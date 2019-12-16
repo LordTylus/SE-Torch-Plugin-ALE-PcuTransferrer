@@ -157,7 +157,6 @@
     <Compile Include="Commands\StatisticCommands.cs" />
     <Compile Include="Commands\TransferCommands.cs" />
     <Compile Include="Commands\RepairCommands.cs" />
-    <Compile Include="CurrentCooldown.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GridManagerPlugin.cs" />
     <Compile Include="UI\CommandsUi.xaml.cs">

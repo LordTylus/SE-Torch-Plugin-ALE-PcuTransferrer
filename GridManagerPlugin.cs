@@ -14,6 +14,7 @@ using System.Windows.Controls;
 using Torch.API.Plugins;
 using ALE_GridManager.UI;
 using ALE_Core.Utils;
+using ALE_Core;
 
 namespace ALE_GridManager {
 

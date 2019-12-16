@@ -12,6 +12,7 @@ using Torch.Mod;
 using Torch.Mod.Messages;
 using VRage.Game.Entity;
 using VRage.Game.ModAPI;
+using VRageMath;
 
 namespace ALE_GridManager.Commands {
 
@@ -71,9 +72,7 @@ namespace ALE_GridManager.Commands {
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
 
-                MyCubeGrid grid = entity as MyCubeGrid;
-
-                if (grid == null)
+                if (!(entity is MyCubeGrid grid))
                     continue;
 
                 if (grid.Physics == null)
@@ -156,9 +155,7 @@ namespace ALE_GridManager.Commands {
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
 
-                MyCubeGrid grid = entity as MyCubeGrid;
-
-                if (grid == null)
+                if (!(entity is MyCubeGrid grid))
                     continue;
 
                 if (grid.Physics == null)
@@ -277,8 +274,9 @@ namespace ALE_GridManager.Commands {
 
                 title = "Grids of Player " + playerName;
 
-                identities = new HashSet<long>();
-                identities.Add(player.IdentityId);
+                identities = new HashSet<long> {
+                    player.IdentityId
+                };
 
             } else if (factionTag != null) {
 
@@ -299,9 +297,7 @@ namespace ALE_GridManager.Commands {
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
 
-                MyCubeGrid grid = entity as MyCubeGrid;
-
-                if (grid == null)
+                if (!(entity is MyCubeGrid grid))
                     continue;
 
                 if (grid.Physics == null)
@@ -378,6 +374,61 @@ namespace ALE_GridManager.Commands {
 
                 ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
+        }
+
+        [Command("listgridsrange", "Lists all grids which are in the given range (m) of your character.")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void ListGridsRange(int radius) {
+
+            if(Context.Player == null) {
+                Context.Respond("This command is not for console!");
+                return;
+            }
+
+            bool showGps = false;
+            bool showPosition = false;
+
+            List<string> args = Context.Args;
+            for (int i = 1; i < args.Count; i++) {
+
+                if (args[i] == "-gps")
+                    showGps = true;
+
+                if (args[i] == "-position")
+                    showPosition = true;
+            }
+
+            var position = Context.Player.GetPosition();
+            var sphere = new BoundingSphereD(position, radius);
+
+            StringBuilder sb = new StringBuilder();
+
+            foreach (MyEntity entity in MyEntities.GetTopMostEntitiesInSphere(ref sphere)) {
+
+                if (!(entity is MyCubeGrid grid))
+                    continue;
+
+                if (grid.Physics == null)
+                    continue;
+
+                sb.AppendLine($"{grid.DisplayName} - {grid.BlocksCount} blocks");
+
+                if (showPosition) {
+
+                    var gridPosition = grid.PositionComp.GetPosition();
+
+                    sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");
+                }
+
+                if (showGps && Context.Player != null) {
+
+                    var gridGPS = MyAPIGateway.Session?.GPS.Create("--" + grid.DisplayName, ($"{grid.DisplayName} - {grid.GridSizeEnum} - {grid.BlocksCount} blocks"), grid.PositionComp.GetPosition(), true);
+
+                    MyAPIGateway.Session?.GPS.AddGps(Context.Player.IdentityId, gridGPS);
+                }
+            }
+
+            ModCommunication.SendMessageTo(new DialogMessage("Grids in Range", radius.ToString("#,##0") + "m", sb.ToString()), Context.Player.SteamUserId);
         }
     }
 }

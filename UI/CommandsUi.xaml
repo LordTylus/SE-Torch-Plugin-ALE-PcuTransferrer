@@ -56,6 +56,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
@@ -121,25 +122,28 @@
                 <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="21" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Text="Lists all Grids and allows for filtering by player or faction and custom sorting." Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Text="Lists all grids and allows for filtering by player or faction and custom sorting." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsrange &lt;range in m> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Lists all grids around you." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="23" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="23" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="24" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="24" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!unprotect [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="26" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Text="" Margin="5" />
-                
-                <TextBlock Grid.Column="0" Grid.Row ="27" Text="!cleanupgrids &lt;days>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!unprotect [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="27" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="28" Text="!gridcleanup &lt;days>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="28" TextWrapping="Wrap" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
 
             </Grid>
 

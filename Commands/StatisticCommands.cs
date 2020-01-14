@@ -33,6 +33,7 @@ namespace ALE_GridManager.Commands {
                 bool countPcu = false;
                 string factionTag = null;
                 string playerName = null;
+                string gridName = null;
                 string orderby = "blocks";
 
                 for (int i = 1; i < args.Count; i++) {
@@ -46,6 +47,9 @@ namespace ALE_GridManager.Commands {
                     if (args[i].StartsWith("-player="))
                         playerName = args[i].Replace("-player=", "");
 
+                    if (args[i].StartsWith("-grid="))
+                        gridName = args[i].Replace("-grid=", "");
+
                     if (args[i].StartsWith("-orderby="))
                         orderby = args[i].Replace("-orderby=", "");
                 }
@@ -56,9 +60,9 @@ namespace ALE_GridManager.Commands {
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu, factionTag, playerName, orderby);
+                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu, factionTag, playerName, orderby);
+                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
@@ -68,7 +72,7 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string orderby) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby) {
 
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
@@ -118,6 +122,9 @@ namespace ALE_GridManager.Commands {
                     continue;
 
                 if (grid.Physics == null)
+                    continue;
+
+                if (gridName != null && grid.DisplayName != gridName)
                     continue;
 
                 HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
@@ -279,8 +286,9 @@ namespace ALE_GridManager.Commands {
 
                 title = "Block of Player " + playerName;
 
-                identities = new HashSet<long>();
-                identities.Add(player.IdentityId);
+                identities = new HashSet<long> {
+                    player.IdentityId
+                };
 
             } else if (factionTag != null) {
 
@@ -300,10 +308,8 @@ namespace ALE_GridManager.Commands {
             }
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
-
-                MyCubeGrid grid = entity as MyCubeGrid;
-
-                if (grid == null)
+                
+                if (!(entity is MyCubeGrid grid))
                     continue;
 
                 if (grid.Physics == null)

@@ -399,11 +399,13 @@ namespace ALE_GridManager.Commands {
             }
 
             var position = Context.Player.GetPosition();
-            var sphere = new BoundingSphereD(position, radius);
+            double distance = (double) radius * radius;
 
             StringBuilder sb = new StringBuilder();
 
-            foreach (MyEntity entity in MyEntities.GetTopMostEntitiesInSphere(ref sphere)) {
+            HashSet<MyCubeGrid> grids = new HashSet<MyCubeGrid>();
+
+            foreach (MyEntity entity in MyEntities.GetEntities()) {
 
                 if (!(entity is MyCubeGrid grid))
                     continue;
@@ -411,14 +413,22 @@ namespace ALE_GridManager.Commands {
                 if (grid.Physics == null)
                     continue;
 
+                grids.Add(grid);
+            }
+
+            foreach(MyCubeGrid grid in grids) {
+
+                var gridPosition = grid.PositionComp.GetPosition();
+
+                double distancePlayerGrid = Vector3D.DistanceSquared(position, gridPosition);
+
+                if (distance < distancePlayerGrid)
+                    continue;
+
                 sb.AppendLine($"{grid.DisplayName} - {grid.BlocksCount} blocks");
 
-                if (showPosition) {
-
-                    var gridPosition = grid.PositionComp.GetPosition();
-
+                if (showPosition)
                     sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");
-                }
 
                 if (showGps && Context.Player != null) {
 

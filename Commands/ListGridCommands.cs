@@ -461,5 +461,89 @@ namespace ALE_GridManager.Commands {
 
             ModCommunication.SendMessageTo(new DialogMessage("Grids in Range", radius.ToString("#,##0") + "m", sb.ToString()), Context.Player.SteamUserId);
         }
+
+        [Command("listnoauthor", "Lists all grids which contain blocks not owned by a player or npc.")]
+        [Permission(MyPromoteLevel.Moderator)]
+        public void ListNoAuthor() {
+
+            bool showGps = false;
+            bool showPosition = false;
+
+            List<string> args = Context.Args;
+            for (int i = 0; i < args.Count; i++) {
+
+                if (args[i] == "-gps")
+                    showGps = true;
+
+                if (args[i] == "-position")
+                    showPosition = true;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            HashSet<MyCubeGrid> grids = new HashSet<MyCubeGrid>();
+
+            foreach (MyEntity entity in MyEntities.GetEntities()) {
+
+                if (!(entity is MyCubeGrid grid))
+                    continue;
+
+                if (grid.Physics == null)
+                    continue;
+
+                grids.Add(grid);
+            }
+
+            HashSet<long> identities = new HashSet<long>();
+
+            foreach (var identity in MySession.Static.Players.GetAllIdentities())
+                identities.Add(identity.IdentityId);
+
+            foreach (MyCubeGrid grid in grids) {
+
+                int numberNobodyBlocks = 0;
+
+                foreach(var block in grid.GetBlocks()) {
+
+                    long buildBy = block.BuiltBy;
+
+                    if (!identities.Contains(buildBy))
+                        numberNobodyBlocks++;
+                }
+
+                if (numberNobodyBlocks == 0)
+                    continue;
+
+                var gridPosition = grid.PositionComp.GetPosition();
+                var ownerId = OwnershipUtils.GetOwner(grid);
+                var ownerName = PlayerUtils.GetPlayerNameById(ownerId);
+
+                sb.AppendLine($"{grid.DisplayName} - Owned by: {ownerName} - {numberNobodyBlocks} blocks");
+
+                if (showPosition)
+                    sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");
+
+                if (showGps && Context.Player != null) {
+
+                    var gridGPS = MyAPIGateway.Session?.GPS.Create("--" + grid.DisplayName, ($"{grid.DisplayName} - {grid.GridSizeEnum} - {grid.BlocksCount} blocks"), grid.PositionComp.GetPosition(), true);
+
+                    MyAPIGateway.Session?.GPS.AddGps(Context.Player.IdentityId, gridGPS);
+                }
+            }
+
+            string title = "Grids without author";
+
+            if (Context.Player == null) {
+
+                Context.Respond(title);
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                ModCommunication.SendMessageTo(new DialogMessage(title,
+                    "Blocks are build by nobody or a deleted identity", sb.ToString()), 
+                    Context.Player.SteamUserId);
+            }
+        }
     }
 }

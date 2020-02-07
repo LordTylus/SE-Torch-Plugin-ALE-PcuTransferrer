@@ -130,20 +130,23 @@
                 <TextBlock Grid.Column="0" Grid.Row ="23" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="24" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="24" Text="!listnoauthor [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Text="Shows grids which have at least 1 block without authorship." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="25" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!unprotect [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="27" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="27" Text="!unprotect [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Text="Unportects a grid again." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="28" Text="!gridcleanup &lt;days>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="28" TextWrapping="Wrap" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="28" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="28" TextWrapping="Wrap" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="29" Text="!gridcleanup &lt;days>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="29" TextWrapping="Wrap" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
 
             </Grid>
 

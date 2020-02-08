@@ -252,8 +252,8 @@ namespace ALE_GridManager.Commands {
                         groupby = args[i].Replace("-groupby=", "");
                 }
 
-                if (groupby != "player" && groupby != "faction") {
-                    Context.Respond("You can only group by 'player', 'faction'! Will use player as default.");
+                if (groupby != "player" && groupby != "faction" && groupby != "grid") {
+                    Context.Respond("You can only group by 'player', 'faction' and 'grid'! Will use player as default.");
                     groupby = "player";
                 }
 
@@ -319,6 +319,14 @@ namespace ALE_GridManager.Commands {
 
                 bool countGrid = false;
 
+                long gridowner = OwnershipUtils.GetOwner(grid);
+                string ownerName = PlayerUtils.GetPlayerNameById(gridowner);
+                
+                string ownerFactionTag = FactionUtils.GetPlayerFactionTag(gridowner);
+
+                if (ownerFactionTag != "")
+                    ownerFactionTag = " [" + ownerFactionTag + "]";
+
                 foreach (MySlimBlock block in blocks) {
 
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
@@ -337,8 +345,11 @@ namespace ALE_GridManager.Commands {
 
                     key = FactionUtils.GetPlayerFactionTag(block.BuiltBy);
 
-                    if (groupby != "faction")
-                        key = key.PadRight(5) +" "+ PlayerUtils.GetPlayerNameById(block.BuiltBy);
+                    if (groupby == "player")
+                        key = key.PadRight(5) + " " + PlayerUtils.GetPlayerNameById(block.BuiltBy);
+
+                    if (groupby == "grid")
+                        key = grid.EntityId + " " + grid.DisplayName+" - Owned by: "+ ownerName + ownerFactionTag;
 
                     if (!blockCounts.ContainsKey(key))
                         blockCounts.Add(key, 0);

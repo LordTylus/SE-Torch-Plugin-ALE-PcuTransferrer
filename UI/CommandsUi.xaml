@@ -127,7 +127,7 @@
                 <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsrange &lt;range in m> [-gps] [-position]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Text="Lists all grids around you." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="23" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="23" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction|grid>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="24" Text="!listnoauthor [-gps] [-position]" Margin="5" />

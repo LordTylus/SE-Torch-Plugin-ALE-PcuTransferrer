@@ -57,6 +57,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 30 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Commands" FontWeight="Bold" Margin="5" />
@@ -147,6 +150,12 @@
 
                 <TextBlock Grid.Column="0" Grid.Row ="29" Text="!gridcleanup &lt;days>" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="29" TextWrapping="Wrap" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="30" Text="!deleteblocks buildby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="30" TextWrapping="Wrap" Text="Deletes all Blocks build by a specific player." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="31" Text="!deleteblocks ownedby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="31" TextWrapping="Wrap" Text="Deletes all Blocks owned by a specific player." Margin="5" />
 
             </Grid>
 

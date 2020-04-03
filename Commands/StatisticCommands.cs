@@ -93,6 +93,9 @@ namespace ALE_GridManager.Commands {
 
         private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric, string findby) {
 
+            if (limitedOnly)
+                findby = "blockpair";
+
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
             Dictionary<string, long> pcuCounts = new Dictionary<string, long>();

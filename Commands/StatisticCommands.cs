@@ -37,6 +37,7 @@ namespace ALE_GridManager.Commands {
                 string gridName = null;
                 string orderby = "blocks";
                 string metric = "author";
+                string findby = "blockpair";
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -57,6 +58,14 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-metric="))
                         metric = args[i].Replace("-metric=", "");
+
+                    if (args[i].StartsWith("-findby="))
+                        findby = args[i].Replace("-findby=", "");
+                }
+
+                if (findby != "blockpair" && findby != "type" && findby != "subtype") {
+                    Context.Respond("You can only look up blocks by type, subtype or blockpair! Will use blockpair as default.");
+                    findby = "blockpair";
                 }
 
                 if (metric != "author" && metric != "owner") {
@@ -70,19 +79,19 @@ namespace ALE_GridManager.Commands {
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby, metric);
+                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby, metric, findby);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby, metric);
+                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby, metric, findby);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
             } else {
 
-                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>] [-metric=<author|owner>]");
+                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>] [-metric=<author|owner>] [-findby=<blockpair|type|subtype>]");
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric, string findby) {
 
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
@@ -151,7 +160,7 @@ namespace ALE_GridManager.Commands {
 
                     countGrid = true;
 
-                    string pairName = block.BlockDefinition.BlockPairName;
+                    string pairName = GetPairName(block, findby);
 
                     if (!limitedOnly || globalLimits.ContainsKey(pairName)) {
 
@@ -261,6 +270,7 @@ namespace ALE_GridManager.Commands {
                 string playerName = null;
                 string groupby = "player";
                 string metric = "author";
+                string findby = "blockpair";
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -275,6 +285,14 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-metric="))
                         metric = args[i].Replace("-metric=", "");
+
+                    if (args[i].StartsWith("-findby="))
+                        findby = args[i].Replace("-findby=", "");
+                }
+
+                if (findby != "blockpair" && findby != "type" && findby != "subtype") {
+                    Context.Respond("You can only look up blocks by type, subtype or blockpair! Will use blockpair as default.");
+                    findby = "blockpair";
                 }
 
                 if (metric != "author" && metric != "owner") {
@@ -287,15 +305,15 @@ namespace ALE_GridManager.Commands {
                     groupby = "player";
                 }
 
-                FindBlocks(type, factionTag, playerName, groupby, metric);
+                FindBlocks(type, factionTag, playerName, groupby, metric, findby);
 
             } else {
 
-                Context.Respond("Correct Usage is !findblock <blockpairname> [-player=<playerName>] [-faction=<factionTag>] [-groupby=<player|faction>]");
+                Context.Respond("Correct Usage is !findblock <blockpairname> [-player=<playerName>] [-faction=<factionTag>] [-groupby=<player|faction>] [-metric=<author|owner>] [-findby=<blockpair|type|subtype>]");
             }
         }
 
-        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric) {
+        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric, string findby) {
 
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
 
@@ -365,9 +383,7 @@ namespace ALE_GridManager.Commands {
                     if (identities != null && !IsMatchesIdentities(identities, block, metric))
                         continue;
 
-                    string pairName = block.BlockDefinition.BlockPairName;
-
-                    if (pairName == null || pairName.ToLower() != type.ToLower())
+                    if (!MatchesType(block, findby, type))
                         continue;
 
                     countGrid = true;
@@ -433,6 +449,33 @@ namespace ALE_GridManager.Commands {
 
                 ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
+        }
+
+        private bool MatchesType(MySlimBlock block, string findby, string type) {
+
+            string pairName = GetPairName(block, findby);
+
+            if (pairName == null || pairName.ToLower() != type.ToLower())
+                return false;
+
+            return true;
+        }
+
+        private string GetPairName(MySlimBlock block, string findby) {
+
+            var blockDefinition = block.BlockDefinition;
+
+            if (findby == "type") {
+                
+                string typeString = blockDefinition.Id.TypeId.ToString();
+
+                return typeString.Replace("MyObjectBuilder_", "");
+            }
+
+            if(findby == "subtype")
+                return blockDefinition.Id.SubtypeId.ToString();
+
+            return blockDefinition.BlockPairName;
         }
     }
 }

@@ -420,7 +420,7 @@ namespace ALE_GridManager.Commands {
             }
 
             var position = Context.Player.GetPosition();
-            double distance = (double) radius * radius;
+            double distance = radius;
 
             StringBuilder sb = new StringBuilder();
 
@@ -441,12 +441,14 @@ namespace ALE_GridManager.Commands {
 
                 var gridPosition = grid.PositionComp.GetPosition();
 
-                double distancePlayerGrid = Vector3D.DistanceSquared(position, gridPosition);
+                double distancePlayerGrid = Vector3D.Distance(position, gridPosition);
 
                 if (distance < distancePlayerGrid)
                     continue;
 
-                sb.AppendLine($"{grid.DisplayName} - {grid.BlocksCount} blocks");
+                double distancePlayerGridKm = distancePlayerGrid / 1000;
+
+                sb.AppendLine($"{distancePlayerGridKm.ToString("#,##0.00")} km - {grid.DisplayName} - {grid.BlocksCount} blocks");
 
                 if (showPosition)
                     sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");

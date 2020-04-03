@@ -3,6 +3,7 @@ using NLog;
 using Sandbox.Game.Entities;
 using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Torch.Commands;
@@ -35,6 +36,7 @@ namespace ALE_GridManager.Commands {
                 string playerName = null;
                 string gridName = null;
                 string orderby = "blocks";
+                string metric = "author";
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -52,6 +54,14 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-orderby="))
                         orderby = args[i].Replace("-orderby=", "");
+
+                    if (args[i].StartsWith("-metric="))
+                        metric = args[i].Replace("-metric=", "");
+                }
+
+                if (metric != "author" && metric != "owner") {
+                    Context.Respond("You can only look up blocks by owner or author! Will use author as default.");
+                    metric = "author";
                 }
 
                 if (orderby != "blocks" && orderby != "pcu" && orderby != "name") {
@@ -60,19 +70,19 @@ namespace ALE_GridManager.Commands {
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby);
+                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby, metric);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby);
+                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby, metric);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
             } else {
 
-                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>]");
+                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>] [-metric=<author|owner>]");
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric) {
 
             Dictionary<string, short> globalLimits = Context.Torch.CurrentSession.KeenSession.BlockTypeLimits;
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
@@ -136,7 +146,7 @@ namespace ALE_GridManager.Commands {
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
                         continue;
 
-                    if (identities != null && !identities.Contains(block.BuiltBy))
+                    if (identities != null && !IsMatchesIdentities(identities, block, metric)) 
                         continue;
 
                     countGrid = true;
@@ -226,6 +236,17 @@ namespace ALE_GridManager.Commands {
             }
         }
 
+        private bool IsMatchesIdentities(HashSet<long> identities, MySlimBlock block, string metric) {
+
+            if (metric == "author" && !identities.Contains(block.BuiltBy))
+                return false;
+
+            if (metric == "owner" && !identities.Contains(block.OwnerId))
+                return false;
+
+            return true;
+        }
+
         [Command("findblock", "Lists which Faction/Player has a defined block in the world. ")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void FindBlocks() {
@@ -239,6 +260,7 @@ namespace ALE_GridManager.Commands {
                 string factionTag = null;
                 string playerName = null;
                 string groupby = "player";
+                string metric = "author";
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -250,6 +272,14 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-groupby="))
                         groupby = args[i].Replace("-groupby=", "");
+
+                    if (args[i].StartsWith("-metric="))
+                        metric = args[i].Replace("-metric=", "");
+                }
+
+                if (metric != "author" && metric != "owner") {
+                    Context.Respond("You can only look up blocks by owner or author! Will use author as default.");
+                    metric = "author";
                 }
 
                 if (groupby != "player" && groupby != "faction" && groupby != "grid") {
@@ -257,7 +287,7 @@ namespace ALE_GridManager.Commands {
                     groupby = "player";
                 }
 
-                FindBlocks(type, factionTag, playerName, groupby);
+                FindBlocks(type, factionTag, playerName, groupby, metric);
 
             } else {
 
@@ -265,7 +295,7 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private void FindBlocks(string type, string factionTag, string playerName, string groupby) {
+        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric) {
 
             Dictionary<string, long> blockCounts = new Dictionary<string, long>();
 
@@ -332,7 +362,7 @@ namespace ALE_GridManager.Commands {
                     if (block == null || block.CubeGrid == null || block.IsDestroyed)
                         continue;
 
-                    if (identities != null && !identities.Contains(block.BuiltBy))
+                    if (identities != null && !IsMatchesIdentities(identities, block, metric))
                         continue;
 
                     string pairName = block.BlockDefinition.BlockPairName;
@@ -343,10 +373,15 @@ namespace ALE_GridManager.Commands {
                     countGrid = true;
                     string key;
 
-                    key = FactionUtils.GetPlayerFactionTag(block.BuiltBy);
+                    long ownerId = block.BuiltBy;
+
+                    if (metric == "owner")
+                        ownerId = block.OwnerId;
+
+                    key = FactionUtils.GetPlayerFactionTag(ownerId);
 
                     if (groupby == "player")
-                        key = key.PadRight(5) + " " + PlayerUtils.GetPlayerNameById(block.BuiltBy);
+                        key = key.PadRight(5) + " " + PlayerUtils.GetPlayerNameById(ownerId);
 
                     if (groupby == "grid")
                         key = grid.EntityId + " " + grid.DisplayName+" - Owned by: "+ ownerName + ownerFactionTag;

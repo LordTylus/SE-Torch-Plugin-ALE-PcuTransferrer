@@ -37,7 +37,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.CheckOwner(gridName, Context);
+                Plugin.CheckModule.CheckOwner(gridName, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -63,7 +63,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.CheckOwner(character, Context);
+                Plugin.CheckModule.CheckOwner(character, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -95,7 +95,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.CheckAuthor(gridName, Context);
+                Plugin.CheckModule.CheckAuthor(gridName, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -121,7 +121,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.CheckAuthor(character, Context);
+                Plugin.CheckModule.CheckAuthor(character, Context);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");

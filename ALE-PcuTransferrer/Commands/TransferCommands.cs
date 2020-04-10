@@ -109,7 +109,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.Transfer(gridName, author, Context, pcu, ownership, force);
+                Plugin.TransferModule.Transfer(gridName, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -145,7 +145,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.Transfer(character, author, Context, pcu, ownership, force);
+                Plugin.TransferModule.Transfer(character, author, Context, pcu, ownership, force);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -164,7 +164,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.TransferNobody(gridName, Context, pcu, ownership);
+                Plugin.TransferModule.TransferNobody(gridName, Context, pcu, ownership);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -198,7 +198,7 @@ namespace ALE_GridManager.Commands {
 
             try {
 
-                Plugin.TransferNobody(character, Context, pcu, ownership);
+                Plugin.TransferModule.TransferNobody(character, Context, pcu, ownership);
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
@@ -297,7 +297,7 @@ namespace ALE_GridManager.Commands {
             else
                 groups = GridFinder.FindLookAtGridGroup(character);
 
-            if (!GridManagerPlugin.CheckGroups(groups, out _, Context, player, pcu, force))
+            if (!Plugin.GroupCheckModule.CheckGroups(groups, out _, Context, player, pcu, force))
                 return false;
 
             return true;
@@ -312,7 +312,7 @@ namespace ALE_GridManager.Commands {
             else
                 groups = GridFinder.FindLookAtGridGroup(character);
 
-            if (!GridManagerPlugin.CheckGroupsNobody(groups, out _, Context))
+            if (!Plugin.GroupCheckModule.CheckGroupsNobody(groups, out _, Context))
                 return false;
 
             return true;

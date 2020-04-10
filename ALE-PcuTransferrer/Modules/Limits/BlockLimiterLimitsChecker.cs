@@ -1,14 +1,24 @@
-﻿using Sandbox.Game.Entities.Cube;
+﻿using NLog;
+using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ALE_GridManager.Modules.Limits {
 
     public class BlockLimiterLimitsChecker : ILimitChecker {
+
+        public static readonly Logger Log = LogManager.GetCurrentClassLogger();
+
+        private readonly MethodInfo canAddMethod;
+
+        public BlockLimiterLimitsChecker(MethodInfo canAddMethod) {
+            this.canAddMethod = canAddMethod;
+        }
 
         public LimitCheckResponse CheckLimits(List<MySlimBlock> blocks, MyIdentity newAuthor) {
 
@@ -22,7 +32,21 @@ namespace ALE_GridManager.Modules.Limits {
                 BlockLimitAfterTransfer = 0
             };
 
-            /* TODO: Do the actual check */
+            try {
+
+                object[] parameters = new object[] { blocks, newAuthor.IdentityId, null };
+
+                canAddMethod.Invoke(null, parameters);
+
+                List<MySlimBlock> notAllowedBlocks = (List<MySlimBlock>)parameters[2];
+
+                if(notAllowedBlocks != null)
+                    foreach (MySlimBlock block in notAllowedBlocks)
+                        response.AddOverLimitBlock(block);
+
+            } catch (Exception e) {
+                Log.Warn(e, "BlockLimiter was unable to verify the transfer request. It is therefore ignored!");
+            }
 
             return response;
         }

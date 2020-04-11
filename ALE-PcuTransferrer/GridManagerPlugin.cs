@@ -15,6 +15,7 @@ using Torch.Session;
 using Torch.Managers;
 using System;
 using System.Reflection;
+using System.IO;
 
 namespace ALE_GridManager {
 
@@ -26,7 +27,7 @@ namespace ALE_GridManager {
 
 
         private UserControl _control;
-        public UserControl GetControl() => _control ?? (_control = new CommandsUi());
+        public UserControl GetControl() => _control ?? (_control = new CommandsUi(this));
 
         public Dictionary<long, CurrentCooldown> ConfirmationsMap { get; } = new Dictionary<long, CurrentCooldown>();
         public ConcurrentDictionary<long, long> PlayersOnFreebuild { get; } = new ConcurrentDictionary<long, long>();
@@ -43,6 +44,11 @@ namespace ALE_GridManager {
         public TransferModule TransferModule { get { return _transferModule; } }
         public CheckModule CheckModule { get { return _checkModule; } }
 
+        private Persistent<GridManagerConfig> _config;
+        public GridManagerConfig Config => _config?.Data;
+
+        public void Save() => _config.Save();
+
         public GridManagerPlugin() {
 
             _groupCheckModule = new GroupCheckModule();
@@ -58,11 +64,34 @@ namespace ALE_GridManager {
             
             base.Init(torch);
 
+            SetupConfig();
+
             var sessionManager = Torch.Managers.GetManager<TorchSessionManager>();
             if (sessionManager != null)
                 sessionManager.SessionStateChanged += SessionChanged;
             else
                 Log.Warn("No session manager loaded!");
+        }
+
+        private void SetupConfig() {
+
+            var configFile = Path.Combine(StoragePath, "GridManager.cfg");
+
+            try {
+
+                _config = Persistent<GridManagerConfig>.Load(configFile);
+
+            } catch (Exception e) {
+                Log.Warn(e);
+            }
+
+            if (_config?.Data == null) {
+
+                Log.Info("Create Default Config, because none was found!");
+
+                _config = new Persistent<GridManagerConfig>(configFile, new GridManagerConfig());
+                _config.Save();
+            }
         }
 
         private void SessionChanged(ITorchSession session, TorchSessionState newState) {
@@ -82,7 +111,7 @@ namespace ALE_GridManager {
 
                         MethodInfo canAddMethod = blockLimiterPlugin.GetType().GetMethod("CanAdd", BindingFlags.Static | BindingFlags.Public);
 
-                        _groupCheckModule.AddLimitChecker(new BlockLimiterLimitsChecker(canAddMethod));
+                        _groupCheckModule.AddLimitChecker(new BlockLimiterLimitsChecker(canAddMethod, Config));
 
                         Log.Info("BlockLimiter Reference added to PCU-Transferrer for limit checks.");
                     

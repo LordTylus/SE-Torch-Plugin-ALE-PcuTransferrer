@@ -15,9 +15,11 @@ namespace ALE_GridManager.Modules.Limits {
         public static readonly Logger Log = LogManager.GetCurrentClassLogger();
 
         private readonly MethodInfo canAddMethod;
+        private readonly GridManagerConfig gridManagerConfig;
 
-        public BlockLimiterLimitsChecker(MethodInfo canAddMethod) {
+        public BlockLimiterLimitsChecker(MethodInfo canAddMethod, GridManagerConfig gridManagerConfig) {
             this.canAddMethod = canAddMethod;
+            this.gridManagerConfig = gridManagerConfig;
         }
 
         public LimitCheckResponse CheckLimits(List<MySlimBlock> blocks, MyIdentity newAuthor) {
@@ -31,6 +33,9 @@ namespace ALE_GridManager.Modules.Limits {
                 BlockLimit = 0,
                 BlockLimitAfterTransfer = 0
             };
+
+            if (!gridManagerConfig.UseBlockLimiter)
+                return response;
 
             try {
 

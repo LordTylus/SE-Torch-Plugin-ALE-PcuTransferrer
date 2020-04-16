@@ -40,6 +40,8 @@ namespace ALE_GridManager.Commands {
 
                 Plugin.RepairModule.Repair(gridName, Context);
 
+                Context.Respond("Grid was repaired!");
+
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");
             }
@@ -65,6 +67,8 @@ namespace ALE_GridManager.Commands {
             try {
 
                 Plugin.RepairModule.Repair(character, Context);
+
+                Context.Respond("Grid was repaired!");
 
             } catch (Exception e) {
                 Log.Error(e, "Error on transferring ship");

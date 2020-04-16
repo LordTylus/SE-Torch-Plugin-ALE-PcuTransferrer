@@ -1,4 +1,5 @@
 ﻿using ALE_Core;
+using ALE_Core.Cooldown;
 using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.Entities;
@@ -97,14 +98,11 @@ namespace ALE_GridManager.Commands {
 
         public void TransferGridName(string gridName, string playerName, bool pcu, bool ownership, bool force) {
 
-            long playerId = 0L;
-
-            if (Context.Player != null)
-                playerId = Context.Player.IdentityId;
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
             MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
-            if (!CheckConformation(playerId, author, gridName, null, pcu, force))
+            if (!CheckConformation(steamId, author, gridName, null, pcu, force))
                 return;
 
             try {
@@ -118,20 +116,14 @@ namespace ALE_GridManager.Commands {
 
         public void TransferLookedAt(string playerName, bool pcu, bool ownership, bool force) {
 
-            IMyPlayer player = Context.Player;
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
-            long playerId;
-
-            if (player == null) {
-
+            if (Context.Player == null) {
                 Context.Respond("Console has no Character so cannot use this command. Use !transfer <playerName> <gridname> instead!");
                 return;
-
-            } else {
-                playerId = player.IdentityId;
             }
 
-            IMyCharacter character = player.Character;
+            IMyCharacter character = Context.Player.Character;
 
             if (character == null) {
                 Context.Respond("You have no Character currently. Make sure to spawn and be out of cockpit!");
@@ -140,7 +132,7 @@ namespace ALE_GridManager.Commands {
 
             MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
 
-            if (!CheckConformation(playerId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
+            if (!CheckConformation(steamId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
                 return;
 
             try {
@@ -154,12 +146,9 @@ namespace ALE_GridManager.Commands {
 
         public void TransferNobodyGridName(string gridName, bool pcu, bool ownership) {
 
-            long playerId = 0L;
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
-            if (Context.Player != null)
-                playerId = Context.Player.IdentityId;
-
-             if (!CheckConformationNobody(playerId, gridName, null))
+            if (!CheckConformationNobody(steamId, gridName, null))
                 return;
 
             try {
@@ -173,27 +162,21 @@ namespace ALE_GridManager.Commands {
 
         public void TransferNobodyLookedAt(bool pcu, bool ownership) {
 
-            IMyPlayer player = Context.Player;
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
-            long playerId;
-
-            if (player == null) {
-
-                Context.Respond("Console has no Character so cannot use this command. Use !transfer <playerName> <gridname> instead!");
+            if (Context.Player == null) {
+                Context.Respond("Console has no Character so cannot use this command. Use !transfernobody <gridname> instead!");
                 return;
-
-            } else {
-                playerId = player.IdentityId;
             }
 
-            IMyCharacter character = player.Character;
+            IMyCharacter character = Context.Player.Character;
 
             if (character == null) {
                 Context.Respond("You have no Character currently. Make sure to spawn and be out of cockpit!");
                 return;
             }
 
-            if (!CheckConformationNobody(playerId, "nogrid_" + pcu + "_" + ownership, character))
+            if (!CheckConformationNobody(steamId, "nogrid_" + pcu + "_" + ownership, character))
                 return;
 
             try {
@@ -205,87 +188,51 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private bool CheckConformation(long executingPlayerId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
+        private bool CheckConformation(ulong steamId, MyIdentity author, string gridName, IMyCharacter character, bool pcu, bool force) {
 
             if (author == null) {
                 Context.Respond("Player not Found!");
                 return false;
             }
-
+            
             long authorId = author.IdentityId;
 
+            var cooldownManager = Plugin.CooldownManager;
+            var cooldownKey = new SteamIdCooldownKey(steamId);
             string command = gridName + "_" + authorId;
 
-            var confirmationCooldownMap = Plugin.ConfirmationsMap;
-
-            if (confirmationCooldownMap.TryGetValue(executingPlayerId, out CurrentCooldown confirmationCooldown)) {
-
-                long remainingSeconds = confirmationCooldown.GetRemainingSeconds(command);
-
-                if (remainingSeconds == 0) {
-
-                    if (!CheckGridFound(author, gridName, character, pcu, force))
-                        return false;
-
-                    Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-                    confirmationCooldown.StartCooldown(command);
-                    return false;
-                }
-
-            } else {
-
-                if (!CheckGridFound(author, gridName, character, pcu, force))
-                    return false;
-
-                confirmationCooldown = new CurrentCooldown(Plugin.CooldownConfirmation);
-                confirmationCooldownMap.Add(executingPlayerId, confirmationCooldown);
-
-                Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-
-                confirmationCooldown.StartCooldown(command);
-                return false;
+            if (!cooldownManager.CheckCooldown(cooldownKey, command, out _)) {
+                cooldownManager.StopCooldown(cooldownKey);
+                return true;
             }
 
-            confirmationCooldownMap.Remove(executingPlayerId);
-            return true;
+            if (!CheckGridFound(author, gridName, character, pcu, force))
+                return false;
+
+            Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
+            cooldownManager.StartCooldown(cooldownKey, command, Plugin.CooldownConfirmation);
+            
+            return false;
         }
 
-        private bool CheckConformationNobody(long executingPlayerId, string gridName, IMyCharacter character) {
+        private bool CheckConformationNobody(ulong steamId, string gridName, IMyCharacter character) {
 
+            var cooldownManager = Plugin.CooldownManager;
+            var cooldownKey = new SteamIdCooldownKey(steamId);
             string command = gridName + "_" + 0;
 
-            var confirmationCooldownMap = Plugin.ConfirmationsMap;
-
-            if (confirmationCooldownMap.TryGetValue(executingPlayerId, out CurrentCooldown confirmationCooldown)) {
-
-                long remainingSeconds = confirmationCooldown.GetRemainingSeconds(command);
-
-                if (remainingSeconds == 0) {
-
-                    if (!CheckGridFoundNobody(gridName, character))
-                        return false;
-
-                    Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-                    confirmationCooldown.StartCooldown(command);
-                    return false;
-                }
-
-            } else {
-
-                if (!CheckGridFoundNobody(gridName, character))
-                    return false;
-
-                confirmationCooldown = new CurrentCooldown(Plugin.CooldownConfirmation);
-                confirmationCooldownMap.Add(executingPlayerId, confirmationCooldown);
-
-                Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-
-                confirmationCooldown.StartCooldown(command);
-                return false;
+            if (!cooldownManager.CheckCooldown(cooldownKey, command, out _)) {
+                cooldownManager.StopCooldown(cooldownKey);
+                return true;
             }
 
-            confirmationCooldownMap.Remove(executingPlayerId);
-            return true;
+            if (!CheckGridFoundNobody(gridName, character))
+                return false;
+
+            Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
+            cooldownManager.StartCooldown(cooldownKey, command, Plugin.CooldownConfirmation);
+
+            return false;
         }
 
         private bool CheckGridFound(MyIdentity player, string gridName, IMyCharacter character, bool pcu, bool force) {

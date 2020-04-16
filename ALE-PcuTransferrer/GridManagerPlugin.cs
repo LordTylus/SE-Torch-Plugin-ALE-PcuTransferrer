@@ -8,7 +8,6 @@ using Torch.API.Session;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using ALE_GridManager.UI;
-using ALE_Core;
 using ALE_GridManager.Modules;
 using ALE_GridManager.Modules.Limits;
 using Torch.Session;
@@ -16,6 +15,7 @@ using Torch.Managers;
 using System;
 using System.Reflection;
 using System.IO;
+using ALE_Core.Cooldown;
 
 namespace ALE_GridManager {
 
@@ -25,11 +25,12 @@ namespace ALE_GridManager {
 
         private static readonly Guid BLOCK_LIMITER_UUID = new Guid("11fca5c4-01b6-4fc3-a215-602e2325be2b");
 
-
         private UserControl _control;
+
         public UserControl GetControl() => _control ?? (_control = new CommandsUi(this));
 
-        public Dictionary<long, CurrentCooldown> ConfirmationsMap { get; } = new Dictionary<long, CurrentCooldown>();
+        public CooldownManager CooldownManager { get; } = new CooldownManager();
+
         public ConcurrentDictionary<long, long> PlayersOnFreebuild { get; } = new ConcurrentDictionary<long, long>();
 
         public long CooldownConfirmation { get { return 30 * 1000; } }

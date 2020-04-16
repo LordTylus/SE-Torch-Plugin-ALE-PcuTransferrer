@@ -10,7 +10,7 @@ using VRage.Game.ModAPI;
 using ALE_Core.Utils;
 using Sandbox.Game;
 using Sandbox.Game.Entities.Cube;
-using ALE_Core;
+using ALE_Core.Cooldown;
 
 namespace ALE_GridManager.Commands {
     public class GridCleanupCommands : CommandModule {
@@ -90,14 +90,12 @@ namespace ALE_GridManager.Commands {
 
         private void DeleteBlocks(string playerName, bool owned, string gridname) {
 
-            long executorId = 0L;
-            if (Context.Player != null)
-                executorId = Context.Player.IdentityId;
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
             MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
             long playerId = player.IdentityId;
 
-            if (!CheckConformation(executorId, playerId, owned, gridname))
+            if (!CheckConformation(steamId, playerId, owned, gridname))
                 return;
 
             List<MyCubeGrid> grids = new List<MyCubeGrid>(MyEntities.GetEntities().OfType<MyCubeGrid>().ToList());
@@ -147,36 +145,22 @@ namespace ALE_GridManager.Commands {
             Context.Respond($"Deleted {deleteCount} blocks from {deleteGridCount} grids.");
         }
 
-        private bool CheckConformation(long executingPlayerId, long playerId, bool owned, string gridname) {
+        private bool CheckConformation(ulong steamId, long playerId, bool owned, string gridname) {
 
             string command = playerId + "_" + owned + "_" + gridname;
 
-            var confirmationCooldownMap = Plugin.ConfirmationsMap;
+            var cooldownManager = Plugin.CooldownManager;
+            var cooldownKey = new SteamIdCooldownKey(steamId);
 
-            if (confirmationCooldownMap.TryGetValue(executingPlayerId, out CurrentCooldown confirmationCooldown)) {
-
-                long remainingSeconds = confirmationCooldown.GetRemainingSeconds(command);
-
-                if (remainingSeconds == 0) {
-
-                    Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-                    confirmationCooldown.StartCooldown(command);
-                    return false;
-                }
-
-            } else {
-
-                confirmationCooldown = new CurrentCooldown(Plugin.CooldownConfirmation);
-                confirmationCooldownMap.Add(executingPlayerId, confirmationCooldown);
-
-                Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
-
-                confirmationCooldown.StartCooldown(command);
-                return false;
+            if (!cooldownManager.CheckCooldown(cooldownKey, command, out _)) {
+                cooldownManager.StopCooldown(cooldownKey);
+                return true;
             }
 
-            confirmationCooldownMap.Remove(executingPlayerId);
-            return true;
+            Context.Respond("Are you sure you want to continue? Enter the command again within 30 seconds to confirm.");
+            cooldownManager.StartCooldown(cooldownKey, command, Plugin.CooldownConfirmation);
+
+            return false;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VRage.Game;
 using static Sandbox.Game.World.MyBlockLimits;
 
 namespace ALE_GridManager.Modules.Limits {
@@ -15,6 +16,11 @@ namespace ALE_GridManager.Modules.Limits {
         public LimitCheckResponse CheckLimits(List<MySlimBlock> blocks, MyIdentity newAuthor) {
 
             var response = new LimitCheckResponse();
+
+            bool blockLimitsEnabled = MySession.Static.BlockLimitsEnabled != MyBlockLimitsEnabledEnum.NONE;
+
+            if (!blockLimitsEnabled)
+                return response;
 
             Dictionary<string, short> vanillaLimits = MySession.Static.BlockTypeLimits;
             Dictionary<string, short> limits = new Dictionary<string, short>(vanillaLimits);

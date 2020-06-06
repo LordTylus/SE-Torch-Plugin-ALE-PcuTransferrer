@@ -427,6 +427,7 @@ namespace ALE_GridManager.Commands {
 
             bool showGps = false;
             bool showPosition = false;
+            bool showId = false;
 
             List<string> args = Context.Args;
             for (int i = 1; i < args.Count; i++) {
@@ -436,6 +437,9 @@ namespace ALE_GridManager.Commands {
 
                 if (args[i] == "-position")
                     showPosition = true;
+
+                if (args[i] == "-id")
+                    showId = true;
             }
 
             var position = Context.Player.GetPosition();
@@ -469,6 +473,9 @@ namespace ALE_GridManager.Commands {
 
                 sb.AppendLine($"{distancePlayerGridKm.ToString("#,##0.00")} km - {grid.DisplayName} - {grid.BlocksCount} blocks");
 
+                if (showId)
+                    sb.AppendLine("   Id: " + grid.EntityId);
+
                 if (showPosition)
                     sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");
 
@@ -489,6 +496,7 @@ namespace ALE_GridManager.Commands {
 
             bool showGps = false;
             bool showPosition = false;
+            bool showId = false;
 
             List<string> args = Context.Args;
             for (int i = 0; i < args.Count; i++) {
@@ -498,6 +506,9 @@ namespace ALE_GridManager.Commands {
 
                 if (args[i] == "-position")
                     showPosition = true;
+
+                if (args[i] == "-id")
+                    showId = true;
             }
 
             StringBuilder sb = new StringBuilder();
@@ -540,6 +551,9 @@ namespace ALE_GridManager.Commands {
                 var ownerName = PlayerUtils.GetPlayerNameById(ownerId);
 
                 sb.AppendLine($"{grid.DisplayName} - Owned by: {ownerName} - {numberNobodyBlocks} blocks");
+
+                if (showId)
+                    sb.AppendLine("   Id: " + grid.EntityId);
 
                 if (showPosition)
                     sb.AppendLine($"   X: {gridPosition.X.ToString("#,##0.00")}, Y: {gridPosition.Y.ToString("#,##0.00")}, Z: {gridPosition.Z.ToString("#,##0.00")}");

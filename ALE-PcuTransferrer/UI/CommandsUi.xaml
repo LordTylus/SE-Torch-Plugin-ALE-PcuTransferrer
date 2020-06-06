@@ -126,10 +126,10 @@
                 <TextBlock Grid.Column="0" Grid.Row ="20" Text="!checklimits &lt;PlayerName>" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!listgridsowner &lt;PlayerName> [-gps] [-position] [-owner]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!listgridsowner &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position] [-owner]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="23" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />

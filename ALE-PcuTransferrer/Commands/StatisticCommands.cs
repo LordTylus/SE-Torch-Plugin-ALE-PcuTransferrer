@@ -146,7 +146,7 @@ namespace ALE_GridManager.Commands {
                 if (grid.Physics == null)
                     continue;
 
-                if (gridName != null && grid.DisplayName != gridName)
+                if (!GridUtils.MatchesGridNameOrIdWithWildcard(grid, gridName))
                     continue;
 
                 HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());

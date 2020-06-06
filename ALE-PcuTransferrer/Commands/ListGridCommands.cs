@@ -30,6 +30,7 @@ namespace ALE_GridManager.Commands {
             bool gps = false;
             bool position = false;
             bool showOwner = false;
+            bool showId = false;
 
             List<string> args = Context.Args;
 
@@ -51,11 +52,14 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i] == "-owner")
                         showOwner = true;
+
+                    if (args[i] == "-id")
+                        showId = true;
                 }
 
             } else {
 
-                Context.Respond("Correct Usage is !listgridsowner <playerName> [-gps] [-position]");
+                Context.Respond("Correct Usage is !listgridsowner <playerName> [-gps] [-position] [-owner] [-id]");
                 return;
             }
 
@@ -92,14 +96,14 @@ namespace ALE_GridManager.Commands {
             sb.AppendLine("---------------------------------------");
 
             foreach (MyCubeGrid grid in bigOwnerGrids)
-                AddGridToSb(grid, sb, position, gps, showOwner, id, false);
+                AddGridToSb(grid, sb, position, gps, showOwner, id, false, showId);
 
             sb.AppendLine("");
             sb.AppendLine("Less then 50 % Ownership");
             sb.AppendLine("---------------------------------------");
 
             foreach (MyCubeGrid grid in smallOwnerGrids)
-                AddGridToSb(grid, sb, position, gps, showOwner, id, false);
+                AddGridToSb(grid, sb, position, gps, showOwner, id, false, showId);
 
             if (Context.Player == null) {
 
@@ -120,6 +124,7 @@ namespace ALE_GridManager.Commands {
             bool gps = false;
             bool position = false;
             bool showOwner = false;
+            bool showId = false;
 
             List<string> args = Context.Args;
 
@@ -141,11 +146,14 @@ namespace ALE_GridManager.Commands {
                     
                     if (args[i] == "-owner")
                         showOwner = true;
+
+                    if (args[i] == "-id")
+                        showId = true;
                 }
 
             } else {
 
-                Context.Respond("Correct Usage is !listgridsauthor <playerName> [-gps] [-position]");
+                Context.Respond("Correct Usage is !listgridsauthor <playerName> [-gps] [-position] [-owner] [-id]");
                 return;
             }
 
@@ -169,7 +177,7 @@ namespace ALE_GridManager.Commands {
                 if (grid.Physics == null)
                     continue;
 
-                AddGridToSb(grid, sb, position, gps, showOwner, id, true);
+                AddGridToSb(grid, sb, position, gps, showOwner, id, true, showId);
             }
 
             if (Context.Player == null) {
@@ -183,7 +191,7 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private void AddGridToSb(MyCubeGrid grid, StringBuilder sb, bool showPosition, bool showGps, bool showOwner, long playerId, bool pcu) {
+        private void AddGridToSb(MyCubeGrid grid, StringBuilder sb, bool showPosition, bool showGps, bool showOwner, long playerId, bool pcu, bool showId) {
 
             HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
 
@@ -215,6 +223,9 @@ namespace ALE_GridManager.Commands {
             else
                 sb.AppendLine($"{grid.DisplayName} - {value} blocks");
 
+            if (showId) 
+                sb.AppendLine("   Id: " + grid.EntityId);
+             
             if (showOwner) {
 
                 long ownerId = OwnershipUtils.GetOwner(grid);
@@ -252,6 +263,7 @@ namespace ALE_GridManager.Commands {
             string factionTag = null;
             string playerName = null;
             string orderby = "blocks";
+            bool showId = false;
 
             for (int i = 0; i < args.Count; i++) {
 
@@ -263,6 +275,9 @@ namespace ALE_GridManager.Commands {
 
                 if (args[i].StartsWith("-orderby="))
                     orderby = args[i].Replace("-orderby=", "");
+
+                if (args[i] == "-id")
+                    showId = true;
             }
 
             if (orderby != "blocks" && orderby != "pcu" && orderby != "name" && orderby != "faction" && orderby != "owner") {
@@ -270,10 +285,10 @@ namespace ALE_GridManager.Commands {
                 orderby = "blocks";
             }
 
-            ListGrids(factionTag, playerName, orderby);
+            ListGrids(factionTag, playerName, orderby, showId);
         }
 
-        private void ListGrids(string factionTag, string playerName, string orderby) {
+        private void ListGrids(string factionTag, string playerName, string orderby, bool showId) {
 
             List<MyCubeGrid> grids = new List<MyCubeGrid>();
             /* Very cheaply. shame on me */
@@ -371,6 +386,10 @@ namespace ALE_GridManager.Commands {
                 long blocks = grid.BlocksCount;
 
                 sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + grid.DisplayName);
+
+                if (showId)
+                    sb.AppendLine("".PadRight(10) + "Id: " + grid.EntityId);
+
                 sb.AppendLine("".PadRight(10) + factionNames[grid.EntityId].PadRight(5) +" - "+ownerNames[grid.EntityId] + pcuString);
 
                 totalValue += blocks;

@@ -88,11 +88,81 @@ namespace ALE_GridManager.Commands {
             DeleteBlocks(playerName, false, gridname);
         }
 
+        [Command("deleteblocks noauthor", "Deletes Blocks which have no author. (pass 'allgrids' to delete the blocks from all grids)")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void DeleteBlocksNoAuthor(string gridname) {
+
+            if (gridname == "allgrids")
+                gridname = null;
+
+            DeleteBlocksNoAuthorInternal(gridname);
+        }
+
+        private void DeleteBlocksNoAuthorInternal(string gridname) {
+
+            ulong steamId = PlayerUtils.GetSteamId(Context.Player);
+
+            if (!CheckConformation(steamId, 0L, false, gridname))
+                return;
+
+            List<MyCubeGrid> grids = new List<MyCubeGrid>(MyEntities.GetEntities().OfType<MyCubeGrid>().ToList());
+            List<MySlimBlock> blocks = new List<MySlimBlock>();
+
+            int deleteCount = 0;
+            int deleteGridCount = 0;
+
+            HashSet<long> identities = new HashSet<long>();
+
+            foreach (var identity in MySession.Static.Players.GetAllIdentities())
+                identities.Add(identity.IdentityId);
+
+            foreach (MyCubeGrid grid in grids) {
+
+                if (gridname != null && gridname != grid.DisplayName)
+                    continue;
+
+                blocks.Clear();
+                blocks.AddRange(grid.GetBlocks());
+
+                bool didDeleteSomethingFromGrid = false;
+
+                foreach (var block in blocks) {
+
+                    bool delete = false;
+
+                    long buildBy = block.BuiltBy;
+
+                    if (!identities.Contains(buildBy))
+                        delete = true;
+
+                    if (delete) {
+
+                        grid.RazeBlock(block.Position);
+
+                        deleteCount++;
+
+                        didDeleteSomethingFromGrid = true;
+                    }
+                }
+
+                if (didDeleteSomethingFromGrid)
+                    deleteGridCount++;
+            }
+
+            Context.Respond($"Deleted {deleteCount} blocks from {deleteGridCount} grids.");
+        }
+
         private void DeleteBlocks(string playerName, bool owned, string gridname) {
 
             ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
             MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+
+            if (player == null) {
+                Context.Respond($"Player {playerName} not found!");
+                return;
+            }
+
             long playerId = player.IdentityId;
 
             if (!CheckConformation(steamId, playerId, owned, gridname))

@@ -63,6 +63,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Respect BlockLimiter Plugins limits (if installed)" Margin="5"/>
@@ -164,6 +165,9 @@
 
                 <TextBlock Grid.Column="0" Grid.Row ="33" Text="!deleteblocks ownedby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="33" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks owned by a specific player." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="34" Text="!deleteblocks noauthor &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="34" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks without author." Margin="5" />
 
             </Grid>
 

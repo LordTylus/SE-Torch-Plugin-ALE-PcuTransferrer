@@ -137,7 +137,7 @@ namespace ALE_GridManager.Commands {
 
                     if (delete) {
 
-                        grid.RazeBlock(block.Position);
+                        grid.RemoveBlock(block, true);
 
                         deleteCount++;
 
@@ -200,7 +200,7 @@ namespace ALE_GridManager.Commands {
 
                     if (delete) {
 
-                        grid.RazeBlock(block.Position);
+                        grid.RemoveBlock(block, true);
                         
                         deleteCount++;
                         

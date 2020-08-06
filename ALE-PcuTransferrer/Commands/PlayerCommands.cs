@@ -1,6 +1,7 @@
 ﻿using ALE_Core.Utils;
 using NLog;
 using Sandbox.Game.World;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -140,6 +141,186 @@ namespace ALE_GridManager.Commands {
             } else {
 
                 ModCommunication.SendMessageTo(new DialogMessage("Blocklimits", $"Limits for {playerName}", sb.ToString()), Context.Player.SteamUserId);
+            }
+        }
+
+        [Command("checkusage player", "Lists how many Blocks and PCU each player has.")]
+        [Permission(MyPromoteLevel.Moderator)]
+        public void CheckUsagePerPlayer() {
+
+            List<string> args = Context.Args;
+
+            string factionTag = null;
+            string orderby = "blocks";
+            bool showNPCs = false;
+            bool online = false;
+            long minPCU = 1;
+            long minBlocks = 1;
+
+            for (int i = 0; i < args.Count; i++) {
+
+                if (args[i] == "-npc")
+                    showNPCs = true;
+
+                if (args[i] == "-online")
+                    online = true;
+
+                if (args[i].StartsWith("-faction="))
+                    factionTag = args[i].Replace("-faction=", "");
+                
+                if (args[i].StartsWith("-orderby="))
+                    orderby = args[i].Replace("-orderby=", "");
+
+                if (args[i].StartsWith("-minpcu="))
+                    long.TryParse(args[i].Replace("-minpcu=", ""), out minPCU);
+
+                if (args[i].StartsWith("-minblocks="))
+                    long.TryParse(args[i].Replace("-minblocks=", ""), out minBlocks);
+            }
+
+            if (orderby != "blocks" && orderby != "pcu" && orderby != "name") {
+                Context.Respond("You can only order by 'pcu', 'name' or 'blocks'! Will use blocks as default.");
+                orderby = "blocks";
+            }
+
+            List<KeyValuePair<string, BlocksAndPCU>> list = new List<KeyValuePair<string, BlocksAndPCU>>();
+
+            foreach (MyIdentity identity in MySession.Static.Players.GetAllIdentities()) {
+
+                if (!showNPCs && PlayerUtils.IsNpc(identity.IdentityId))
+                    continue;
+
+                if (online && !MySession.Static.Players.IsPlayerOnline(identity.IdentityId))
+                    continue;
+
+                if (factionTag != null && FactionUtils.GetPlayerFactionTag(identity.IdentityId) != factionTag)
+                    continue;
+
+                var blockLimits = identity.BlockLimits;
+                var blocksAndPcu = new BlocksAndPCU(blockLimits.BlocksBuilt, blockLimits.PCUBuilt);
+
+                list.Add(new KeyValuePair<string, BlocksAndPCU>(identity.DisplayName, blocksAndPcu));
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Usage for Players");
+            sb.AppendLine("---------------------------------------");
+
+            OutputList(list, sb, orderby, minBlocks, minPCU, "players");
+        }
+
+        [Command("checkusage faction", "Lists how many Blocks and PCU each faction has.")]
+        [Permission(MyPromoteLevel.Moderator)]
+        public void CheckUsagePerFaction() {
+
+            List<string> args = Context.Args;
+
+            string orderby = "blocks";
+            bool showNPCs = false;
+            long minPCU = 1;
+            long minBlocks = 1;
+
+            for (int i = 0; i < args.Count; i++) {
+
+                if (args[i] == "-npc")
+                    showNPCs = true;
+
+                if (args[i].StartsWith("-orderby="))
+                    orderby = args[i].Replace("-orderby=", "");
+
+                if (args[i].StartsWith("-minpcu="))
+                    long.TryParse(args[i].Replace("-minpcu=", ""), out minPCU);
+
+                if (args[i].StartsWith("-minblocks="))
+                    long.TryParse(args[i].Replace("-minblocks=", ""), out minBlocks);
+            }
+
+            if (orderby != "blocks" && orderby != "pcu" && orderby != "name") {
+                Context.Respond("You can only order by 'pcu', 'name' or 'blocks'! Will use blocks as default.");
+                orderby = "blocks";
+            }
+
+            List<KeyValuePair<string, BlocksAndPCU>> list = new List<KeyValuePair<string, BlocksAndPCU>>();
+
+            foreach (IMyFaction faction in MySession.Static.Factions.Factions.Values) {
+
+                if (!showNPCs && faction.IsEveryoneNpc())
+                    continue;
+
+                long blocksBuild = 0;
+                long pcuBuild = 0;
+
+                foreach(long identityId in faction.Members.Keys) {
+
+                    MyIdentity identity = PlayerUtils.GetIdentityById(identityId);
+
+                    var blockLimits = identity.BlockLimits;
+
+                    blocksBuild += blockLimits.BlocksBuilt;
+                    pcuBuild += blockLimits.PCUBuilt;
+                }
+
+
+                var blocksAndPcu = new BlocksAndPCU(blocksBuild, pcuBuild);
+                var name = "[" + faction.Tag + "] " + faction.Name;
+
+                list.Add(new KeyValuePair<string, BlocksAndPCU>(name, blocksAndPcu));
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            sb.AppendLine("Usage for Factions");
+            sb.AppendLine("---------------------------------------");
+
+            OutputList(list, sb, orderby, minBlocks, minPCU, "factions");
+        }
+
+        private void OutputList(List<KeyValuePair<string, BlocksAndPCU>> list, StringBuilder sb, string orderby, long minBlocks, long minPCU, string forString) {
+
+            list.Sort(delegate (KeyValuePair<string, BlocksAndPCU> pair1, KeyValuePair<string, BlocksAndPCU> pair2) {
+
+                if (orderby == "name")
+                    return pair1.Key.CompareTo(pair2.Key);
+
+                if (orderby == "pcu")
+                    return pair2.Value.PCU.CompareTo(pair1.Value.PCU);
+
+                return pair2.Value.Blocks.CompareTo(pair1.Value.Blocks);
+            });
+
+            foreach(KeyValuePair<string, BlocksAndPCU> pair in list) {
+
+                long blocks = pair.Value.Blocks;
+                long pcu = pair.Value.PCU;
+
+                if (pcu < minPCU || blocks < minBlocks)
+                    continue;
+
+                sb.AppendLine(pair.Key);
+                sb.AppendLine("    Blocks: " + blocks);
+                sb.AppendLine("    PCU: " + pcu);
+            }
+
+            if (Context.Player == null) {
+
+                Context.Respond($"Usage for {forString}");
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                ModCommunication.SendMessageTo(new DialogMessage("Usages", $"Usages for {forString}", sb.ToString()), Context.Player.SteamUserId);
+            }
+        }
+
+        private struct BlocksAndPCU {
+
+            public long Blocks { get; }
+            public long PCU { get; }
+
+            public BlocksAndPCU(long blocksBuilt, long pcuBuilt) {
+                Blocks = blocksBuilt;
+                PCU = pcuBuilt;
             }
         }
     }

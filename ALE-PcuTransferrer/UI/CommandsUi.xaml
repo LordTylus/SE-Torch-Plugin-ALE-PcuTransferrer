@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ALE_GridManager.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="1550" d:DesignWidth="800">
+             d:DesignHeight="1750" d:DesignWidth="800">
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -67,6 +67,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Grid.Column="0" Grid.Row ="0" VerticalAlignment="Center" Text="Respect BlockLimiter Plugins limits (if installed)" Margin="5"/>
@@ -112,74 +113,77 @@
                 <TextBlock Grid.Column="0" Grid.Row ="14" Text="" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="14" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="15" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="15" Text="!listblocks all [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]&#x0a;[-export=&lt;name>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="15" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all blocks the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="16" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="16" Text="!listblocks limited [-pcu] [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-orderby=&lt;pcu|name|blocks>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]&#x0a;[-export=&lt;name>]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="16" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists limited blocks (defined in blocktype limits) the world has. Can also output total PCU, and be filtered for player or faction" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="17" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="17" Text="!listallblocks [-metric=&lt;author|owner>] [-export=&lt;name>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="17" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists how many of which Blocks each player in your world has." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="18" Text="!checkowner [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists the owners and amount of blocks they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="18" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="18" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!checkauthor [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists the authors and amount of PCU they own in descending order of the given grid or the grid you are looking at." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="19" Text="!checkowner [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="19" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists the owners and amount of blocks they own in descending order of the given grid or the grid you are looking at." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="20" Text="!checklimits &lt;PlayerName>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="20" Text="!checkauthor [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="20" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists the authors and amount of PCU they own in descending order of the given grid or the grid you are looking at." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!listgridsowner &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="21" Text="!checklimits &lt;PlayerName>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="21" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Gives an overview of block, PCU and blocktype limits for the given player." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="22" Text="!listgridsowner &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="22" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has block ownership on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="23" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids and allows for filtering by player or faction and custom sorting." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="23" Text="!listgridsauthor &lt;PlayerName> [-gps] [-position] [-owner] [-id]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="23" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids the player has PCU authorship on. Can automatically add gps and also show the location if desired." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="24" Text="!listgridsrange &lt;range in m> [-gps] [-position]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids around you." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="24" Text="!listgrids [-player=&lt;PlayerName>] [-faction=&lt;FactionTag>]&#x0a;[-orderby=&lt;pcu|name|blocks|faction|owner>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="24" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids and allows for filtering by player or faction and custom sorting." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction|grid>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Shows which Faction or Player owns a specific block." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="25" Text="!listgridsrange &lt;range in m> [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids around you." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!listnoauthor [-gps] [-position]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Shows grids which have at least 1 block without authorship." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction|grid>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]&#x0a;[-export=&lt;name>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="27" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="27" Text="!listnoauthor [-gps] [-position]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="27" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Shows grids which have at least 1 block without authorship." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="28" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="28" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="28" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="28" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="29" Text="!unprotect [GridName]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="29" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Unportects a grid again." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="29" Text="!protect [GridName] [-allowDamage] [-allowEdit]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="29" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Protects the grid you are looking at or with given name. You can either protect it completely or only disable grinding, or damage." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="30" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="30" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="30" Text="!unprotect [GridName]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="30" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Unportects a grid again." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="31" Text="!gridcleanup &lt;days> [-keepfactions]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="31" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="31" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="31" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="32" Text="!deleteblocks buildby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="32" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks build by a specific player." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="32" Text="!gridcleanup &lt;days> [-keepfactions]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="32" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="33" Text="!deleteblocks ownedby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="33" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks owned by a specific player." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="33" Text="!deleteblocks buildby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="33" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks build by a specific player." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="34" Text="!deleteblocks noauthor &lt;GridName|allgrids>" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="34" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks without author." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="34" Text="!deleteblocks ownedby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="34" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks owned by a specific player." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="35" Text="" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="35" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="35" Text="!deleteblocks noauthor &lt;GridName|allgrids>" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="35" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks without author." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="36" Text="!checkusage faction [-npc] [-orderby=&lt;pcu|block|name>]&#x0a;[-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="36" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL factions on the server. Ordered by Block-Count by default. With min blocks and pcu 1." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="36" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="36" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="37" Text="!checkusage player [-npc] [-online] [-faction=&lt;Tag>]&#x0a;[-orderby=&lt;pcu|block|name>] [-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
-                <TextBlock Grid.Column="1" Grid.Row ="37" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL players on the server. Ordered by block-count by default. With min blocks and pcu 1." Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="37" Text="!checkusage faction [-npc] [-orderby=&lt;pcu|block|name>]&#x0a;[-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="37" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL factions on the server. Ordered by Block-Count by default. With min blocks and pcu 1." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="38" Text="!checkusage player [-npc] [-online] [-faction=&lt;Tag>]&#x0a;[-orderby=&lt;pcu|block|name>] [-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="38" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL players on the server. Ordered by block-count by default. With min blocks and pcu 1." Margin="5" />
 
             </Grid>
 

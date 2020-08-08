@@ -5,6 +5,7 @@ using Sandbox.Game.Entities.Cube;
 using Sandbox.Game.World;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Torch.Commands;
 using Torch.Commands.Permissions;
@@ -38,6 +39,7 @@ namespace ALE_GridManager.Commands {
                 string orderby = "blocks";
                 string metric = "author";
                 string findby = "blockpair";
+                string export = null;
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -61,6 +63,19 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-findby="))
                         findby = args[i].Replace("-findby=", "");
+
+                    if (args[i].StartsWith("-export="))
+                        export = args[i].Replace("-export=", "");
+                }
+
+                if (export != null) {
+
+                    export = export.Trim();
+
+                    if (export == "") {
+                        Context.Respond("Invalid name for Export file, Export is ignored!");
+                        export = null;
+                    }
                 }
 
                 if (findby != "blockpair" && findby != "type" && findby != "subtype") {
@@ -79,19 +94,19 @@ namespace ALE_GridManager.Commands {
                 }
 
                 if (type == "all") 
-                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby, metric, findby);
+                    ListBlocks(false, countPcu, factionTag, playerName, gridName, orderby, metric, findby, export);
                 else if (type == "limited") 
-                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby, metric, findby);
+                    ListBlocks(true, countPcu, factionTag, playerName, gridName, orderby, metric, findby, export);
                 else 
                     Context.Respond("Known type only 'all' and 'limited' is supported!");
 
             } else {
 
-                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>] [-metric=<author|owner>] [-findby=<blockpair|type|subtype>]");
+                Context.Respond("Correct Usage is !listblocks <all|limited> [-pcu] [-player=<playerName>] [-faction=<factionTag>] [-orderby=<pcu|name|blocks>] [-metric=<author|owner>] [-findby=<blockpair|type|subtype>] [-export=<name>]");
             }
         }
 
-        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric, string findby) {
+        private void ListBlocks(bool limitedOnly, bool countPCU, string factionTag, string playerName, string gridName, string orderby, string metric, string findby, string export) {
 
             if (limitedOnly)
                 findby = "blockpair";
@@ -196,6 +211,14 @@ namespace ALE_GridManager.Commands {
             });
 
             StringBuilder sb = new StringBuilder();
+            StringBuilder exportSb = new StringBuilder();
+
+            if(limitedOnly) 
+                exportSb.AppendLine("Block Name;Block Count;Block Limit;PCU Count");
+            else
+                exportSb.AppendLine("Block Name;Block Count;PCU Count");
+
+            bool isExport = export != null;
 
             long totalPCU = 0;
             long totalValue = 0;
@@ -203,10 +226,11 @@ namespace ALE_GridManager.Commands {
             foreach (string pair in myList) {
 
                 string pcuString = "";
+                long pcu = 0L; 
 
                 if (countPCU) {
 
-                    long pcu = pcuCounts[pair];
+                    pcu = pcuCounts[pair];
 
                     pcuString = " " + pcu.ToString("#,##0") + " PCU";
 
@@ -215,10 +239,20 @@ namespace ALE_GridManager.Commands {
 
                 long blocks = blockCounts[pair];
 
-                if (limitedOnly)
+                if (limitedOnly) {
+
                     sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + " / (" + globalLimits[pair] + ")   " + pair + pcuString);
-                else
+
+                    if (isExport)
+                        exportSb.AppendLine(pair + ";" + blocks + ";" + globalLimits[pair] + ";" + pcu);
+
+                } else {
+
                     sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + pair + pcuString);
+
+                    if (isExport)
+                        exportSb.AppendLine(pair + ";" + blocks + ";" + pcu);
+                }
 
                 totalValue += blocks;
             }
@@ -232,6 +266,12 @@ namespace ALE_GridManager.Commands {
             sb.AppendLine();
             sb.AppendLine(gridCount.ToString("#,##0") + " Grids checked");
 
+            if(isExport) {
+
+                ExportToFile(exportSb, export);
+
+                return;
+            }
 
             if (Context.Player == null) {
 
@@ -243,6 +283,188 @@ namespace ALE_GridManager.Commands {
                 string subtitle = "All Blocks";
                 if (limitedOnly)
                     subtitle = "Only Limited Blocks";
+
+                ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
+            }
+        }
+
+        [Command("listallblocks", "Lists how many of which Blocks each player in your world has.")]
+        [Permission(MyPromoteLevel.SpaceMaster)]
+        public void ListAllBlocks() {
+
+            List<string> args = Context.Args;
+
+            string export = null;
+            string metric = "author";
+
+            for (int i = 0; i < args.Count; i++) {
+
+                if (args[i].StartsWith("-export="))
+                    export = args[i].Replace("-export=", "");
+
+                if (args[i].StartsWith("-metric="))
+                    metric = args[i].Replace("-metric=", "");
+            }
+
+            if (metric != "author" && metric != "owner") {
+                Context.Respond("You can only look up blocks by owner or author! Will use author as default.");
+                metric = "author";
+            }
+
+            if (export != null) {
+
+                export = export.Trim();
+
+                if (export == "") {
+                    Context.Respond("Invalid name for Export file, Export is ignored!");
+                    export = null;
+                }
+            }
+
+            ListAllBlocks(metric, export);
+        }
+
+        private void ListAllBlocks(string metric, string export) {
+
+            Dictionary<ListKey, Dictionary<string, BlockInfo>> blockCounts = new Dictionary<ListKey, Dictionary<string, BlockInfo>>();
+
+            int gridCount = 0;
+            long blockCount = 0;
+            long pcuCount = 0;
+
+            foreach (MyEntity entity in MyEntities.GetEntities()) {
+
+                if (!(entity is MyCubeGrid grid))
+                    continue;
+
+                if (grid.Physics == null)
+                    continue;
+
+                HashSet<MySlimBlock> blocks = new HashSet<MySlimBlock>(grid.GetBlocks());
+
+                foreach (MySlimBlock block in blocks) {
+
+                    if (block == null || block.CubeGrid == null || block.IsDestroyed)
+                        continue;
+
+                    long ownerId;
+
+                    if (metric == "author")
+                        ownerId = block.BuiltBy;
+                    else
+                        ownerId = block.OwnerId;
+
+                    ListKey key = new ListKey {
+                        Id = ownerId
+                    };
+
+                    Dictionary<string, BlockInfo> infoDict;
+
+                    if (!blockCounts.ContainsKey(key)) {
+
+                        /* Only check that one once */
+                        key.Faction = FactionUtils.GetPlayerFactionTag(ownerId);
+                        key.Name = PlayerUtils.GetPlayerNameById(ownerId);
+
+                        infoDict = new Dictionary<string, BlockInfo>();
+
+                        blockCounts.Add(key, infoDict);
+
+                    } else {
+
+                        infoDict = blockCounts[key];
+                    }
+
+                    string pairName = block.BlockDefinition.BlockPairName;
+                    BlockInfo info;
+
+                    if (!infoDict.ContainsKey(pairName)) {
+
+                        info = new BlockInfo {
+                            PairName = pairName
+                        };
+
+                        infoDict.Add(pairName, info);
+                    
+                    } else {
+                        info = infoDict[pairName];
+                    }
+
+                    int pcu = BlockUtils.GetPcu(block);
+
+                    info.PCU += pcu;
+                    info.Count++;
+
+                    pcuCount += pcu;
+                    blockCount++;
+                }
+
+                gridCount++;
+            }
+
+            var myList = new List<ListKey>(blockCounts.Keys);
+
+            myList.Sort(delegate (ListKey pair1, ListKey pair2) {
+                return pair1.Name.CompareTo(pair2.Name);
+            });
+
+            string title = "Blocks per Player";
+
+            StringBuilder sb = new StringBuilder();
+            StringBuilder exportSb = new StringBuilder();
+
+            exportSb.AppendLine("Id;Name;Faction;Block Name;Block Count;PCU Count");
+
+            bool isExport = export != null;
+
+            foreach (ListKey key in myList) {
+
+                Dictionary<string, BlockInfo> infoDict = blockCounts[key];
+
+                List<string> pairnames = new List<string>(infoDict.Keys);
+
+                pairnames.Sort(delegate (string pair1, string pair2) {
+                    return pair1.CompareTo(pair2);
+                });
+
+                sb.AppendLine(key.Name + " [" + key.Faction + "]");
+                sb.AppendLine("-------------------------------------");
+
+                foreach (string pairname in pairnames) {
+
+                    BlockInfo info = infoDict[pairname];
+
+                    sb.AppendLine("   "+info.Count.ToString("#,##0").PadRight(5) + "   " + info.PairName+" - "+info.PCU+" PCU");
+
+                    if (isExport)
+                        exportSb.AppendLine(key.Id + ";" + key.Name + ";" + key.Faction + ";" + info.PairName + ";" + info.Count + ";" + info.PCU);
+                }
+
+                sb.AppendLine("");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("Total: " + blockCount.ToString("#,##0") + " Blocks");
+            sb.AppendLine("Total: " + pcuCount.ToString("#,##0") + " PCU");
+
+            sb.AppendLine();
+            sb.AppendLine(gridCount.ToString("#,##0") + " Grids checked");
+
+            if (isExport) {
+
+                ExportToFile(exportSb, export);
+
+                return;
+            }
+
+            if (Context.Player == null) {
+
+                Context.Respond(title);
+                Context.Respond(sb.ToString());
+
+            } else {
+
+                string subtitle = "All Blocks";
 
                 ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
@@ -274,6 +496,7 @@ namespace ALE_GridManager.Commands {
                 string groupby = "player";
                 string metric = "author";
                 string findby = "blockpair";
+                string export = null;
 
                 for (int i = 1; i < args.Count; i++) {
 
@@ -291,6 +514,19 @@ namespace ALE_GridManager.Commands {
 
                     if (args[i].StartsWith("-findby="))
                         findby = args[i].Replace("-findby=", "");
+
+                    if (args[i].StartsWith("-export="))
+                        export = args[i].Replace("-export=", "");
+                }
+
+                if (export != null) {
+                    
+                    export = export.Trim();
+
+                    if (export == "") {
+                        Context.Respond("Invalid name for Export file, Export is ignored!");
+                        export = null;
+                    }
                 }
 
                 if (findby != "blockpair" && findby != "type" && findby != "subtype") {
@@ -308,7 +544,7 @@ namespace ALE_GridManager.Commands {
                     groupby = "player";
                 }
 
-                FindBlocks(type, factionTag, playerName, groupby, metric, findby);
+                FindBlocks(type, factionTag, playerName, groupby, metric, findby, export);
 
             } else {
 
@@ -316,9 +552,9 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric, string findby) {
+        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric, string findby, string export) {
 
-            Dictionary<string, long> blockCounts = new Dictionary<string, long>();
+            Dictionary<ListKey, long> blockCounts = new Dictionary<ListKey, long>();
 
             int gridCount = 0;
 
@@ -390,20 +626,27 @@ namespace ALE_GridManager.Commands {
                         continue;
 
                     countGrid = true;
-                    string key;
 
                     long ownerId = block.BuiltBy;
 
                     if (metric == "owner")
                         ownerId = block.OwnerId;
 
-                    key = FactionUtils.GetPlayerFactionTag(ownerId);
+                    ListKey key = new ListKey {
+                        Faction = FactionUtils.GetPlayerFactionTag(ownerId)
+                    };
 
-                    if (groupby == "player")
-                        key = key.PadRight(5) + " " + PlayerUtils.GetPlayerNameById(ownerId);
+                    if (groupby == "player") {
+                        key.Name = PlayerUtils.GetPlayerNameById(ownerId);
+                        key.Id = ownerId;
+                    }
 
-                    if (groupby == "grid")
-                        key = grid.EntityId + " " + grid.DisplayName+" - Owned by: "+ ownerName + ownerFactionTag;
+                    if (groupby == "grid") {
+                        key.Name = grid.DisplayName;
+                        key.Id = grid.EntityId;
+                        key.IsGrid = true;
+                        key.OwnerName = ownerName;
+                    }
 
                     if (!blockCounts.ContainsKey(key))
                         blockCounts.Add(key, 0);
@@ -415,21 +658,32 @@ namespace ALE_GridManager.Commands {
                     gridCount++;
             }
 
-            List<string> myList = new List<string>(blockCounts.Keys);
+            List<ListKey> myList = new List<ListKey>(blockCounts.Keys);
 
-            myList.Sort(delegate (string pair1, string pair2) {
+            myList.Sort(delegate (ListKey pair1, ListKey pair2) {
                 return blockCounts[pair2].CompareTo(blockCounts[pair1]);
             });
 
             StringBuilder sb = new StringBuilder();
+            StringBuilder exportSb = new StringBuilder();
+
+            exportSb.AppendLine("Id;Name;Faction;Owner;Block Count");
+
+            bool isExport = export != null;
 
             long totalValue = 0;
 
-            foreach (string key in myList) {
+            foreach (ListKey key in myList) {
 
                 long blocks = blockCounts[key];
 
-                sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key);
+                if(!key.IsGrid)
+                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key.Faction.PadRight(5) + key.Name);
+                else
+                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key.Id + " " + key.Name + " - Owned by: " + key.OwnerName + key.Faction);
+
+                if (isExport)
+                    exportSb.AppendLine(key.Id + ";" + key.Name + ";" + key.Faction + ";" + key.OwnerName + ";" + blocks);
 
                 totalValue += blocks;
             }
@@ -440,6 +694,12 @@ namespace ALE_GridManager.Commands {
             sb.AppendLine();
             sb.AppendLine(gridCount.ToString("#,##0") + " Grids checked");
 
+            if (isExport) {
+
+                ExportToFile(exportSb, export);
+
+                return;
+            }
 
             if (Context.Player == null) {
 
@@ -452,6 +712,26 @@ namespace ALE_GridManager.Commands {
 
                 ModCommunication.SendMessageTo(new DialogMessage(title, subtitle, sb.ToString()), Context.Player.SteamUserId);
             }
+        }
+
+        private void ExportToFile(StringBuilder exportSb, string export) {
+
+            string path = CreatePath(export);
+
+            File.WriteAllText(path, exportSb.ToString());
+
+            Context.Respond("Exported to '" + path + "'");
+        }
+
+        public string CreatePath(string export) {
+
+            foreach (var c in Path.GetInvalidFileNameChars())
+                export = export.Replace(c, '_');
+
+            var folder = Path.Combine(Plugin.StoragePath, "ExportedStatistics");
+            Directory.CreateDirectory(folder);
+
+            return Path.Combine(folder, export + ".csv");
         }
 
         private bool MatchesType(MySlimBlock block, string findby, string type) {
@@ -479,6 +759,35 @@ namespace ALE_GridManager.Commands {
                 return blockDefinition.Id.SubtypeId.ToString();
 
             return blockDefinition.BlockPairName;
+        }
+
+        private class BlockInfo {
+
+            public string PairName { get; set; }
+            public long Count { get; set; }
+            public long PCU { get; set; }
+        }
+
+        private class ListKey {
+
+            public string Name { get; set; }
+            public string Faction { get; set; }
+            public long Id { get; set; }
+
+            public bool IsGrid { get; set; }
+
+            public string OwnerName { get; set; }
+
+            public override bool Equals(object obj) {
+                return obj is ListKey key &&
+                        Id == key.Id;
+            }
+
+            public override int GetHashCode() {
+                var hashCode = -1776534320;
+                hashCode = hashCode * -1521134295 + Id.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }

@@ -63,6 +63,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/> <!-- 35 -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
@@ -157,7 +160,7 @@
                 <TextBlock Grid.Column="0" Grid.Row ="30" Text="" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="30" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="31" Text="!gridcleanup &lt;days>" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="31" Text="!gridcleanup &lt;days> [-keepfactions]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="31" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Removes grids from players inactive for longer than x days, removes them from faction and transfers remaining ownership to other players." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="32" Text="!deleteblocks buildby &lt;PlayerName> &lt;GridName|allgrids>" Margin="5" />
@@ -168,6 +171,15 @@
 
                 <TextBlock Grid.Column="0" Grid.Row ="34" Text="!deleteblocks noauthor &lt;GridName|allgrids>" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="34" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Deletes all Blocks without author." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="35" Text="" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="35" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="" Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="36" Text="!checkusage faction [-npc] [-orderby=&lt;pcu|block|name>]&#x0a;[-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="36" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL factions on the server. Ordered by Block-Count by default. With min blocks and pcu 1." Margin="5" />
+
+                <TextBlock Grid.Column="0" Grid.Row ="37" Text="!checkusage player [-npc] [-online] [-faction=&lt;Tag>]&#x0a;[-orderby=&lt;pcu|block|name>] [-minblocks=&lt;number>] [-minpcu=&lt;number>]" Margin="5" />
+                <TextBlock Grid.Column="1" Grid.Row ="37" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Outputs the PCU and Blocks of ALL players on the server. Ordered by block-count by default. With min blocks and pcu 1." Margin="5" />
 
             </Grid>
 

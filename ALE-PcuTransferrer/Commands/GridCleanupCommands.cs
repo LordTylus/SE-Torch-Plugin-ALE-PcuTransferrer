@@ -23,6 +23,8 @@ namespace ALE_GridManager.Commands {
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void GridCleanup(int days) {
 
+            bool keepFactions = Context.Args.Contains("-keepfactions");
+
             DateTime timeDelta = DateTime.Now - TimeSpan.FromDays(days);
 
             int deletedGrids = 0;
@@ -49,8 +51,9 @@ namespace ALE_GridManager.Commands {
                 if (referenceTime >= timeDelta)
                     continue;
 
-                /* If player had a faction, kick him */
-                MyVisualScriptLogicProvider.KickPlayerFromFaction(identityId);
+                /* If player had a faction, kick him unless we wanna keep that */
+                if (!keepFactions) 
+                    MyVisualScriptLogicProvider.KickPlayerFromFaction(identityId);
 
                 foreach (var grid in grids) {
 

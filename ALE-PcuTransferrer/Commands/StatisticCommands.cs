@@ -108,7 +108,7 @@ namespace ALE_GridManager.Commands {
 
             if (playerName != null) {
 
-                MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+                MyIdentity player = PlayerUtils.GetIdentityByNameOrId(playerName);
                 if (player == null) {
 
                     Context.Respond("Player not found!");
@@ -328,7 +328,7 @@ namespace ALE_GridManager.Commands {
 
             if (playerName != null) {
 
-                MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+                MyIdentity player = PlayerUtils.GetIdentityByNameOrId(playerName);
                 if (player == null) {
 
                     Context.Respond("Player not found!");

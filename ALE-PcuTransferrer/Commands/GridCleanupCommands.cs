@@ -159,7 +159,7 @@ namespace ALE_GridManager.Commands {
 
             ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
-            MyIdentity player = PlayerUtils.GetIdentityByName(playerName);
+            MyIdentity player = PlayerUtils.GetIdentityByNameOrId(playerName);
 
             if (player == null) {
                 Context.Respond($"Player {playerName} not found!");

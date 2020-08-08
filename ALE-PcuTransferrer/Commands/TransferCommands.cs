@@ -100,7 +100,7 @@ namespace ALE_GridManager.Commands {
 
             ulong steamId = PlayerUtils.GetSteamId(Context.Player);
 
-            MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
+            MyIdentity author = PlayerUtils.GetIdentityByNameOrId(playerName);
 
             if (!CheckConformation(steamId, author, gridName, null, pcu, force))
                 return;
@@ -130,7 +130,7 @@ namespace ALE_GridManager.Commands {
                 return;
             }
 
-            MyIdentity author = PlayerUtils.GetIdentityByName(playerName);
+            MyIdentity author = PlayerUtils.GetIdentityByNameOrId(playerName);
 
             if (!CheckConformation(steamId, author, "nogrid_" + pcu + "_" + ownership, character, pcu, force))
                 return;

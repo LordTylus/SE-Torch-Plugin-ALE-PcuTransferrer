@@ -105,7 +105,7 @@ namespace ALE_GridManager.Commands {
         [Permission(MyPromoteLevel.Moderator)]
         public void CheckLimits(string playerName) {
 
-            MyIdentity identity = PlayerUtils.GetIdentityByName(playerName);
+            MyIdentity identity = PlayerUtils.GetIdentityByNameOrId(playerName);
 
             if(identity == null) {
                 Context.Respond("Player not found!");

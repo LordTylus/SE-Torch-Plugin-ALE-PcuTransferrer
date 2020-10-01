@@ -296,6 +296,7 @@ namespace ALE_GridManager.Commands {
 
             string export = null;
             string metric = "author";
+            string findby = "blockpair";
 
             for (int i = 0; i < args.Count; i++) {
 
@@ -304,6 +305,14 @@ namespace ALE_GridManager.Commands {
 
                 if (args[i].StartsWith("-metric="))
                     metric = args[i].Replace("-metric=", "");
+
+                if (args[i].StartsWith("-findby="))
+                    findby = args[i].Replace("-findby=", "");
+            }
+
+            if (findby != "blockpair" && findby != "type" && findby != "subtype") {
+                Context.Respond("You can only look up blocks by type, subtype or blockpair! Will use blockpair as default.");
+                findby = "blockpair";
             }
 
             if (metric != "author" && metric != "owner") {
@@ -321,10 +330,10 @@ namespace ALE_GridManager.Commands {
                 }
             }
 
-            ListAllBlocks(metric, export);
+            ListAllBlocks(metric, export, findby);
         }
 
-        private void ListAllBlocks(string metric, string export) {
+        private void ListAllBlocks(string metric, string export, string findby) {
 
             Dictionary<ListKey, Dictionary<string, BlockInfo>> blockCounts = new Dictionary<ListKey, Dictionary<string, BlockInfo>>();
 
@@ -375,7 +384,7 @@ namespace ALE_GridManager.Commands {
                         infoDict = blockCounts[key];
                     }
 
-                    string pairName = block.BlockDefinition.BlockPairName;
+                    string pairName = GetPairName(block, findby);
                     BlockInfo info;
 
                     if (!infoDict.ContainsKey(pairName)) {

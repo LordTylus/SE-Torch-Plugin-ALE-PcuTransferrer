@@ -490,6 +490,17 @@ namespace ALE_GridManager.Commands {
             return true;
         }
 
+        private bool IsMatchesNobody(MySlimBlock block, string metric) {
+
+            if (metric == "author" && block.BuiltBy != 0)
+                return false;
+
+            if (metric == "owner" && block.OwnerId != 0)
+                return false;
+
+            return true;
+        }
+
         [Command("findblock", "Lists which Faction/Player has a defined block in the world. ")]
         [Permission(MyPromoteLevel.SpaceMaster)]
         public void FindBlocks() {
@@ -506,8 +517,12 @@ namespace ALE_GridManager.Commands {
                 string metric = "author";
                 string findby = "blockpair";
                 string export = null;
+                bool nobody = false;
 
                 for (int i = 1; i < args.Count; i++) {
+
+                    if (args[i] == "-nobody")
+                        nobody = true;
 
                     if (args[i].StartsWith("-faction="))
                         factionTag = args[i].Replace("-faction=", "");
@@ -553,7 +568,7 @@ namespace ALE_GridManager.Commands {
                     groupby = "player";
                 }
 
-                FindBlocks(type, factionTag, playerName, groupby, metric, findby, export);
+                FindBlocks(type, factionTag, playerName, groupby, metric, findby, export, nobody);
 
             } else {
 
@@ -561,7 +576,7 @@ namespace ALE_GridManager.Commands {
             }
         }
 
-        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric, string findby, string export) {
+        private void FindBlocks(string type, string factionTag, string playerName, string groupby, string metric, string findby, string export, bool nobody) {
 
             Dictionary<ListKey, long> blockCounts = new Dictionary<ListKey, long>();
 
@@ -571,36 +586,43 @@ namespace ALE_GridManager.Commands {
 
             string title = "Blocks in World";
 
-            if (playerName != null) {
+            if (!nobody) {
 
-                MyIdentity player = PlayerUtils.GetIdentityByNameOrId(playerName);
-                if (player == null) {
+                if (playerName != null) {
 
-                    Context.Respond("Player not found!");
-                    return;
-                }
+                    MyIdentity player = PlayerUtils.GetIdentityByNameOrId(playerName);
+                    if (player == null) {
 
-                title = "Block of Player " + playerName;
+                        Context.Respond("Player not found!");
+                        return;
+                    }
 
-                identities = new HashSet<long> {
+                    title = "Blocks of Player " + playerName;
+
+                    identities = new HashSet<long> {
                     player.IdentityId
                 };
 
-            } else if (factionTag != null) {
+                } else if (factionTag != null) {
 
-                IMyFaction faction = FactionUtils.GetIdentityByTag(factionTag);
+                    IMyFaction faction = FactionUtils.GetIdentityByTag(factionTag);
 
-                if (faction == null) {
+                    if (faction == null) {
 
-                    Context.Respond("Faction not found!");
-                    return;
+                        Context.Respond("Faction not found!");
+                        return;
+                    }
+
+                    title = "Blocks of Faction " + factionTag;
+
+                    identities = new HashSet<long>();
+                    foreach (long identityId in faction.Members.Keys)
+                        identities.Add(identityId);
                 }
+            
+            } else {
 
-                title = "Block of Faction " + factionTag;
-
-                identities = new HashSet<long>();
-                foreach (long identityId in faction.Members.Keys)
-                    identities.Add(identityId);
+                title = "Blocks of Nobody";
             }
 
             foreach (MyEntity entity in MyEntities.GetEntities()) {
@@ -629,6 +651,9 @@ namespace ALE_GridManager.Commands {
                         continue;
 
                     if (identities != null && !IsMatchesIdentities(identities, block, metric))
+                        continue;
+
+                    if (nobody && !IsMatchesNobody(block, metric))
                         continue;
 
                     if (!MatchesType(block, findby, type))

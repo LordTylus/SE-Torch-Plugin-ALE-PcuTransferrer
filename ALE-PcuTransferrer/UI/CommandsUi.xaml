@@ -146,7 +146,7 @@
                 <TextBlock Grid.Column="0" Grid.Row ="25" Text="!listgridsrange &lt;range in m> [-gps] [-position]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="25" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Lists all grids around you." Margin="5" />
 
-                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction|grid>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]&#x0a;[-export=&lt;name>]" Margin="5" />
+                <TextBlock Grid.Column="0" Grid.Row ="26" Text="!findblock &lt;blockpairname> [-player=&lt;PlayerName>]&#x0a;[-faction=&lt;FactionTag>] [-groupby=&lt;player|faction|grid>]&#x0a;[-metric=&lt;author|owner>] [-findby=&lt;blockpair|type|subtype>]&#x0a;[-export=&lt;name>][-nobody]" Margin="5" />
                 <TextBlock Grid.Column="1" Grid.Row ="26" TextWrapping="Wrap" Grid.ColumnSpan="2" Text="Shows which Faction or Player owns a specific block." Margin="5" />
 
                 <TextBlock Grid.Column="0" Grid.Row ="27" Text="!listnoauthor [-gps] [-position]" Margin="5" />

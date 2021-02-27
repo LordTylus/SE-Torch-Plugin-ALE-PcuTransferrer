@@ -43,7 +43,7 @@ namespace ALE_GridManager.Commands {
                 Context.Respond("Grid was repaired!");
 
             } catch (Exception e) {
-                Log.Error(e, "Error on transferring ship");
+                Log.Error(e, "Error on repairing ship");
             }
         }
 

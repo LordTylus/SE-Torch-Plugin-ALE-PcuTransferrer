@@ -141,6 +141,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ALE-PcuTransferrer\Commands\RechargeCommands.cs" />
     <Compile Include="ALE-PcuTransferrer\Commands\SpecialCommands.cs" />
     <Compile Include="ALE-PcuTransferrer\GridManagerConfig.cs" />
     <Compile Include="ALE-PcuTransferrer\Modules\GroupCheckModule.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="ALE-PcuTransferrer\Modules\Limits\VanillaLimitsChecker.cs" />
     <Compile Include="ALE-PcuTransferrer\Modules\Limits\BlockLimiterLimitsChecker.cs" />
     <Compile Include="ALE-PcuTransferrer\Modules\Limits\ILimitChecker.cs" />
+    <Compile Include="ALE-PcuTransferrer\Modules\RechargeModule.cs" />
     <Compile Include="ALE-PcuTransferrer\Modules\TransferModule.cs" />
     <Compile Include="ALE-PcuTransferrer\Modules\RepairModule.cs" />
     <Compile Include="ALE-PcuTransferrer\Commands\GridCleanupCommands.cs" />

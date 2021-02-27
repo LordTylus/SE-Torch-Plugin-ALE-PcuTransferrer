@@ -35,15 +35,11 @@ namespace ALE_GridManager {
 
         public long CooldownConfirmation { get { return 30 * 1000; } }
 
-        private readonly GroupCheckModule _groupCheckModule;
-        private readonly RepairModule _repairModule;
-        private readonly TransferModule _transferModule;
-        private readonly CheckModule _checkModule;
-
-        public GroupCheckModule GroupCheckModule { get { return _groupCheckModule; } }
-        public RepairModule RepairModule { get { return _repairModule; } }
-        public TransferModule TransferModule { get { return _transferModule; } }
-        public CheckModule CheckModule { get { return _checkModule; } }
+        public GroupCheckModule GroupCheckModule { get; }
+        public RepairModule RepairModule { get; }
+        public TransferModule TransferModule { get; }
+        public CheckModule CheckModule { get; }
+        public RechargeModule RechargeModule { get; }
 
         private Persistent<GridManagerConfig> _config;
         public GridManagerConfig Config => _config?.Data;
@@ -52,12 +48,13 @@ namespace ALE_GridManager {
 
         public GridManagerPlugin() {
 
-            _groupCheckModule = new GroupCheckModule();
-            _groupCheckModule.AddLimitChecker(new VanillaLimitsChecker());
+            GroupCheckModule = new GroupCheckModule();
+            GroupCheckModule.AddLimitChecker(new VanillaLimitsChecker());
 
-            _repairModule = new RepairModule(_groupCheckModule);
-            _transferModule = new TransferModule(_groupCheckModule);
-            _checkModule = new CheckModule(_groupCheckModule);
+            RepairModule = new RepairModule(GroupCheckModule);
+            TransferModule = new TransferModule(GroupCheckModule);
+            CheckModule = new CheckModule(GroupCheckModule);
+            RechargeModule = new RechargeModule(GroupCheckModule);
         }
 
         /// <inheritdoc />
@@ -112,7 +109,7 @@ namespace ALE_GridManager {
 
                         MethodInfo canAddMethod = blockLimiterPlugin.GetType().GetMethod("CanAdd", BindingFlags.Static | BindingFlags.Public);
 
-                        _groupCheckModule.AddLimitChecker(new BlockLimiterLimitsChecker(canAddMethod, Config));
+                        GroupCheckModule.AddLimitChecker(new BlockLimiterLimitsChecker(canAddMethod, Config));
 
                         Log.Info("BlockLimiter Reference added to PCU-Transferrer for limit checks.");
                     

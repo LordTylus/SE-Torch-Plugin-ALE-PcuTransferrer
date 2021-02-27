@@ -666,9 +666,25 @@ namespace ALE_GridManager.Commands {
                     if (metric == "owner")
                         ownerId = block.OwnerId;
 
+                    var faction = MySession.Static.Factions.TryGetPlayerFaction(ownerId);
+                    string factionName = "[no Faction]";
+                    string blockFaction = "";
+                    long factionId = 0;
+
+                    if (faction != null) {
+                        blockFaction = faction.Tag;
+                        factionId = faction.FactionId;
+                        factionName = faction.Name;
+                    }
+
                     ListKey key = new ListKey {
-                        Faction = FactionUtils.GetPlayerFactionTag(ownerId)
+                        Faction = blockFaction
                     };
+
+                    if (groupby == "faction") {
+                        key.Name = factionName;
+                        key.Id = factionId;
+                    }
 
                     if (groupby == "player") {
                         key.Name = PlayerUtils.GetPlayerNameById(ownerId);
@@ -714,7 +730,7 @@ namespace ALE_GridManager.Commands {
                 if(!key.IsGrid)
                     sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key.Faction.PadRight(5) + key.Name);
                 else
-                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key.Id + " " + key.Name + " - Owned by: " + key.OwnerName + key.Faction);
+                    sb.AppendLine(blocks.ToString("#,##0").PadRight(7) + "   " + key.Id + " " + key.Name + " - Owned by: " + key.OwnerName + " " + key.Faction);
 
                 if (isExport)
                     exportSb.AppendLine(key.Id + ";" + key.Name + ";" + key.Faction + ";" + key.OwnerName + ";" + blocks);

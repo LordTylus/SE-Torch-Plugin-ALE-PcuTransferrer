@@ -66,8 +66,13 @@ namespace ALE_GridManager.Modules.Limits {
                 limits[blockType] = remainingBlocks;
             }
 
-            response.BlockLimitAfterTransfer = response.CurrentBlocks + blockCountOfGroup;
-            response.PcuAfterTransfer = response.CurrentPcu + pcusOfGroup;
+            /* If Block Limit is not Disabled check for that. */
+            if (response.BlockLimit > 0)
+                response.BlockLimitAfterTransfer = response.CurrentBlocks + blockCountOfGroup;
+            
+            /* If PCU Limit is not Disabled check for that. */
+            if(response.PcuLimit > 0)
+                response.PcuAfterTransfer = response.CurrentPcu + pcusOfGroup;
 
             return response;
         }

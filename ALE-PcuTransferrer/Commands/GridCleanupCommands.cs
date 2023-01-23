@@ -124,6 +124,9 @@ namespace ALE_GridManager.Commands {
                 if (gridname != null && gridname != grid.DisplayName)
                     continue;
 
+                if (grid.Physics == null)
+                    continue;
+
                 blocks.Clear();
                 blocks.AddRange(grid.GetBlocks());
 

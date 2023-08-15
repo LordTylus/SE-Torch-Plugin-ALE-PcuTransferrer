@@ -175,7 +175,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup />
-  <Import Project="ALE-Core\ALE-Core.projitems" Label="Shared" />
+  <Import Project="..\ALE-Core\ALE-Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
     <ItemGroup>
         <Content Include="$(ProjectDir)\manifest.xml" CopyToOutputDirectory="PreserveNewest" />

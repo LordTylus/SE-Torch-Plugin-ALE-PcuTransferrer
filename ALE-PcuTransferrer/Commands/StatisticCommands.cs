@@ -775,8 +775,7 @@ namespace ALE_GridManager.Commands {
 
         public string CreatePath(string export) {
 
-            foreach (var c in Path.GetInvalidFileNameChars())
-                export = export.Replace(c, '_');
+            export = FileUtils.ToValidatedInput(export);
 
             var folder = Path.Combine(Plugin.StoragePath, "ExportedStatistics");
             Directory.CreateDirectory(folder);
